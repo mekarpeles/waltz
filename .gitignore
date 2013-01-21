@@ -1,0 +1,6 @@
+*~
+*.pyc
+#*
+*.cfg
+sessions/*
+.db
