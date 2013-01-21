@@ -10,13 +10,15 @@ __license__ = "public domain"
 __contributors__ = "see AUTHORS"
 
 import web
-from analytics import *
+import os
+from lazydb import Db
+
+session = lambda: getattr(web.ctx, 'session', None)
+render = lambda: getattr(web.ctx, 'render', None)
+db = Db('%s/db' % os.getcwd())
+
 from security import User
 from decorations import *
 from utils import *
 from treasury import *
 from setup import *
-
-session = lambda: getattr(web.ctx, 'session', None)
-render = lambda: getattr(web.ctx, 'render', None)
-
