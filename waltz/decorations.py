@@ -9,10 +9,9 @@
     :license pending
 """
 
-import web
+from waltz import web, db
 import os
 from copy import copy
-from lazydb.lazydb import Db
 
 def track(fn):
     """A decorator which wraps each route with analytics tracking."""
@@ -27,7 +26,6 @@ def track(fn):
             pickeling issues, and dump it to lazydb before returning
             the route
             """
-            db = Db(web.ctx.waltz['db'])
             ctx = copy(web.ctx['env'])
             del ctx['wsgi.errors']
             del ctx['wsgi.input']
