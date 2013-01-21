@@ -1,4 +1,16 @@
-$def with (content)
+#-*- coding: utf-8 -*-
+"""
+    static
+    ~~~~~~
+    Static html resources to render during scaffolding
+"""
+
+index = """$def with()
+
+<h1>Darling, we're ready to waltz!</h1>
+"""
+
+base = """$def with (content)
 
 <!DOCTYPE html>
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -35,3 +47,4 @@ $def with (content)
     </script>
   </body>
 </html>
+"""
