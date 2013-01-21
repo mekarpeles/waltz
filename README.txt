@@ -15,6 +15,8 @@ Installation
 Example
 =======
 
+Feel free to clone the following code snippet from https://gist.github.com/4584751.git
+
 Typical usage often looks like this::
 
     #!/usr/bin/env Python
