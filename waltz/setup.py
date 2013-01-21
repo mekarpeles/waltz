@@ -11,8 +11,8 @@ import web
 import os
 from functools import partial
 
-def dancefloor(urls, fvars, sessions=False, scaffold=False,
-               autoreload=False, debug=True, **kwargs):
+def dancefloor(urls, fvars, sessions=False, autoreload=False,
+               debug=True, **kwargs):
     """
     params:
         urls - a flat tuple consisting of alternating strings pairs
@@ -23,9 +23,6 @@ def dancefloor(urls, fvars, sessions=False, scaffold=False,
         sessions - a boolean False denotes sessions will not be used.
                    Otherwise, a dict is expected which is used as
                    the default session data structure / values.
-        scaffold - if True, builds scaffolding for the project,
-                   including dirs:
-                   static/, templates/, routes/, subapps/
     **kwargs:
         env - a dict of environment ctx vars + funcs which will
               be made globally accesible from within html templates
@@ -33,21 +30,24 @@ def dancefloor(urls, fvars, sessions=False, scaffold=False,
                         method s.t. the user may use DBStore or specify
                         an alternate path besides the default, 'sessions/'
         session - a dictionary representing a default init'd session
-    """    
+    """
+    init_scaffolding(**kwargs)
     app = web.application(_preprocess(urls), fvars, autoreload=autoreload)
     env = {'ctx': web.ctx}
     env.update(kwargs.get('env', {}))
 
     def setup_rendering():
         html = partial(web.template.render, '%s/templates/' % os.getcwd())
-        slender = kwargs.get('slender', html(globals=env))
-        render = kwargs.get('render', html(base='base', globals=env))
+        slender = html(globals=env)
+        render = html(base='base', globals=env)
         def render_hook(): web.ctx.render = render
         app.add_processor(web.loadhook(render_hook))
         env['render'] = slender
 
     def setup_sessions():
-        if sessions is False: return
+        if sessions is False:
+            env['session'] = None
+            return
         def default_store():
             """Default method of storing session: DiskStore
             created directory sessions/ by default to store sessions"""
@@ -65,8 +65,7 @@ def dancefloor(urls, fvars, sessions=False, scaffold=False,
         db = kwargs.get('db', "%s/db" % os.getcwd())
         def waltz_hook():
             web.ctx.waltz = {"debug": debug, "db": db}
-        app.add_processor(web.loadhook(waltz_hook))
-        if scaffold: init_scaffolding(**kwargs)
+        app.add_processor(web.loadhook(waltz_hook))        
 
     setup_rendering()
     setup_sessions()
@@ -112,17 +111,15 @@ def init_scaffolding(**kwargs):
 
     def build_templates():
         """Builds the templates/ directory"""
+        from waltz.static import base, index
         path = '%s/templates' % os.getcwd()
         if not os.path.exists(path):
             os.makedirs(path)
-        for fname in ['base', 'index']
-        base = '%s/%s.html' % (path, fname)
-        if not os.path.exists(base):
-            rc = '%s/static/%s.html' % \
-                (os.path.dirname(globals()['__file__']), fname)
-            x = open(rc, 'r').read()
-            with open(base, 'w') as f:
-                f.write(x)
+        for fname, content in [('base', base), ('index', index)]:
+            base = '%s/%s.html' % (path, fname)
+            if not os.path.exists(base): 
+                with open(base, 'w') as f:
+                    f.write(content)
 
     build_static()
     build_routes()
