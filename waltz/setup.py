@@ -62,6 +62,8 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
 
     def setup_waltz():
         web.config.debug = debug        
+        if debug:
+            PeriodicReloader()
         db = kwargs.get('db', "%s/db" % os.getcwd())
         def waltz_hook():
             web.ctx.waltz = {"debug": debug, "db": db}
