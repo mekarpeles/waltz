@@ -20,15 +20,27 @@ Typical usage often looks like this::
     #!/usr/bin/env Python
 
     import waltz
-    from waltz import render, session
+    from waltz import track, db, render, session
 
-    urls = ('/', 'Index')
+   urls = ('/session', 'Session',
+           '/analytics', 'Analytics',
+           '/', 'Index')
 
-    app = waltz.setup.dancefloor(urls, globals(), sessions={},  scaffold=True)
-    
+    sessions = {'cart': waltz.Cart()}
+    app = waltz.setup.dancefloor(urls, globals(), sessions=sessions, scaffold=True)
+
     class Index:
+        @track
         def GET(self):
-	    return "hello world"
+            return render().index()
+
+    class Session:
+        def GET(self):
+            return session()
+
+    class Analytics:
+        def GET(self):
+            return db.get('analytics')
 
     if __name__ == "__main__":
         app.run()
