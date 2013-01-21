@@ -1,21 +1,20 @@
-=====
-Waltz
-=====
+# Waltz
 
 Waltz (v.0.1.6) is a web.py based web framework for rapidly designing
 web apps in 3/4 time. Waltz comes pre-configured, ready to run, and
 includes features like out-of-the-box support for analytics
 tracking. Waltz and never miss a beat.
 
-Installation
-============
+## Installation
+
+You may wish to install with the --upgrade flag since updates pushed are frequently.
 
     pip install waltz
 
 Example
-=======
+-------
 
-Feel free to clone the following code snippet from https://gist.github.com/4584751.git
+Feel free to clone the following code snippet from https://gist.github.com/4584751.git or wget the raw main.py file from https://gist.github.com/raw/4584751/08ed11e5aa774a3a224f1c3d903562b9f5366775/main.py
 
 Typical usage often looks like this::
 
@@ -29,7 +28,7 @@ Typical usage often looks like this::
            '/', 'Index')
 
     sessions = {'cart': waltz.Cart()}
-    app = waltz.setup.dancefloor(urls, globals(), sessions=sessions, scaffold=True)
+    app = waltz.setup.dancefloor(urls, globals(), sessions=sessions)
 
     class Index:
         @track
