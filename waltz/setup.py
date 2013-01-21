@@ -10,6 +10,7 @@
 import web
 import os
 from functools import partial
+from reloader import PeriodicReloader
 
 def dancefloor(urls, fvars, sessions=False, autoreload=False,
                debug=True, **kwargs):
