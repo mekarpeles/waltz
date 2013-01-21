@@ -33,16 +33,49 @@
       <section id="main_content" class="inner">
         <h3>Overview</h3>
 
-<p>Waltz is a web.py based web framework for rapidly designing web apps in 3/4 time. Waltz comes with batteries; pre-configured, ready to run. Waltz and never miss a beat.</p>
+          <p>
+            Waltz (0.1.62 alpha) is a web.py based web framework for rapidly designing web apps
+            in 3/4 time. Waltz comes with batteries; pre-configured, ready to run.
+            Waltz and never miss a beat.
+          </p>
 
-<h3>Install</h3>
-<pre><code>$ sudo pip install --upgrade waltz</code></pre>
+        <h3>Install</h3>
+          <pre><code>$ sudo pip install --upgrade waltz</code></pre>
 
-<h3>Features</h3>
-Waltz tracks analytics via route decorators, offers stateless db agnostic modules for user authentication, and has built-in sessions, features tools for out-of-the-box ecommerce (like a shopping Cart system), and provides lightweight scaffolding for project setup. Waltz abstracts away many of the configurations which would otherwise clutter up your application</p>
+        <h3>Features</h3>
+          <p>
+            I [mek] have been using web.py for about five years on several different production
+            websites. Web.py offers a simple and understandable interface, is robust, and is easily extensible. 
+            However, I find a problem in that I am forced to extend my appications in nearly identical
+            ways every time I start a new project. My goal with Waltz is to create a framework
+            which is an extension of web.py, yet reduces the friction one encounters when
+            trying to get started / configured. In addition, a collection of general purpose
+            modules (ecommerce, authentication, social) will be offered (and not enforced), 
+            so that hacker entrepreneurs and hackathoners can get their ideas to market more quickly.
+          </p>
+          <p>  
+            In one sentence, Waltz abstracts away many of the messy configurations which otherwise
+            clutter and complicate your application, and in turn provid clean interfaces and modules to
+            speed up your development.
+          </p>
+          <ul>
+            <li>Tracks analytics via @track route decorators</li>
+            <li>Stateless, db agnostic modules user authentication modules</li>
+            <li>Out-of-the box session support</li>
+            <li>Ecommerce features: Shopping cart system complete with coupon/promo support</li>
+            <li>lightweight scaffolding for rapid project setup</li>
+          </ul>
 
-<h3>Versus web.py</h3>
-Waltz doesn't try to differentiate itself from web.py as a framework. Rather, it dances with web.py (is built using web.py) and offers several clean abstractions for speeding up the setup and development process for a project. 
+      <h3>Versus web.py</h3>
+        <p>
+          Waltz doesn't try to differentiate itself from web.py as a framework.
+          Rather, it dances harmoniously with web.py, hand in hand. Waltz 
+          intends to be an extension of web.py and requires minimal change
+          if you're website is already in web.py. The advantage of using Waltz
+          is it allows you to get a website up and running more quickly, abstracting
+          away most of the configuration and providing modules to accomplish common 
+          websites applications like ecommerce shopping carts.
+        </p>
 
 <h3>Getting Started</h3>
 <p>There are two types waltz installs. The latest waltz module (v.0.1.62) is available via pip install. An bare-bones starter application, which uses the waltz framework, can be downloaded here: <a href="https://gist.github.com/4584751">https://gist.github.com/4584751</a>.</p>
