@@ -1,0 +1,16 @@
+v.0.1.6 Sat 20, 2013 -- Spotlight
+- Waltz is now a standalone module
+
+v.0.1.4, Sat 19, 2013 -- Ballet Shoes
+- Added shopping cart
+- Session Support
+- New css templates
+- login + registration
+- refined ballroom modules
+- backward compatibility for python 2.6
+
+v0.1.3, Sat 17 November 2012 -- Ballroom Dancer
+- added sessions + session support
+- subapps for API routes
+
+v0.1.2, Tue 20 November 2012 -- Initial Release.
