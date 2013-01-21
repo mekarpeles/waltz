@@ -15,7 +15,7 @@ from lazydb import Db
 
 session = lambda: getattr(web.ctx, 'session', None)
 render = lambda: getattr(web.ctx, 'render', None)
-db = Db('%s/db' % os.getcwd())
+db = lambda: Db('%s/db' % os.getcwd())
 
 from security import User
 from decorations import *
