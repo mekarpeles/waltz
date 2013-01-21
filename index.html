@@ -33,14 +33,22 @@
       <section id="main_content" class="inner">
         <h3>Overview</h3>
 
-<p>Waltz-example is a repository which demonstrates the benefits of the Waltz (v.0.1.62) framework. Waltz is a web.py based web framework for rapidly designing web apps in 3/4 time. Waltz comes pre-configured, ready to run, and includes features like out-of-the-box support for analytics tracking. Waltz and never miss a beat.</p>
+<p>Waltz is a web.py based web framework for rapidly designing web apps in 3/4 time. Waltz comes pre-configured, ready to run, and includes features like out-of-the-box support for analytics tracking. Waltz and never miss a beat.</p>
 
 <h3>Installation</h3>
+<p>There are two types waltz installs. The lates waltz module (v.0.1.62) is available via pip install. An example application, which uses the waltz framework, can be found here: <a href="https://gist.github.com/4584751">https://gist.github.com/4584751</a>. Alternatively, if you'd like to waltz with more kick in your step, you can clone the waltz-example repository from github.</p>
 
 <pre><code>$ sudo pip install --upgrade waltz
-$ git clone http://github.com/mekarpeles/waltz-example
-$ cd waltz-example
-$ python main.py # &lt;port&gt; optional; defaults to port 8080 
+$ mkdir project
+$ cd project
+$ wget https://gist.github.com/raw/4584751/08ed11e5aa774a3a224f1c3d903562b9f5366775/main.py
+$ python main.py # 8080 (follow w/ optional port)
+</code></pre>
+
+<pre><code>$ sudo pip install --upgrade waltz
+$ git clone https://github.com/mekarpeles/waltz-example # project (follow w/ optional project name)
+$ cd waltz-example # or 'project', depending on what you named it
+$ python main.py # 8080 (follow w/ optional port)
 </code></pre>
 
 <h3>Authors and Contributors</h3>
