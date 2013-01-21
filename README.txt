@@ -11,12 +11,11 @@ You may wish to install with the --upgrade flag since updates pushed are frequen
 
     pip install waltz
 
-Example
--------
+## Example
 
 Feel free to clone the following code snippet from https://gist.github.com/4584751.git or wget the raw main.py file from https://gist.github.com/raw/4584751/08ed11e5aa774a3a224f1c3d903562b9f5366775/main.py
 
-Typical usage often looks like this::
+Typical usage often looks like this:
 
     #!/usr/bin/env Python
 
@@ -46,8 +45,7 @@ Typical usage often looks like this::
     if __name__ == "__main__":
         app.run()
 
-TODO
-====
+## TODO
 
 * Oauth Integration
 * Payment Processing Modules (consider stripe checkout)
