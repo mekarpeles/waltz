@@ -20,7 +20,6 @@ setup(
     author_email='michael.karpeles@gmail.com',
     packages=[
         'waltz',
-        'waltz.static',
         'waltz.test'
         ],
     platforms='any',
