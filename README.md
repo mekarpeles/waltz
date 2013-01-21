@@ -22,7 +22,7 @@ Typical usage often looks like this:
     import waltz
     from waltz import track, db, render, session
 
-   urls = ('/session', 'Session',
+    urls = ('/session', 'Session',
            '/analytics', 'Analytics',
            '/', 'Index')
 
