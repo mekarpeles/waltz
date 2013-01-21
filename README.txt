@@ -1,3 +1,4 @@
+=====
 Waltz
 =====
 
@@ -7,14 +8,19 @@ includes features like out-of-the-box support for analytics
 tracking. Waltz and never miss a beat.
 
 Installation
-------------
+============
 
     pip install waltz
 
 Example
--------
+=======
+
+Typical usage often looks like this::
+
+    #!/usr/bin/env Python
 
     import waltz
+    from waltz import render, session
 
     urls = ('/', 'Index')
 
@@ -28,7 +34,7 @@ Example
         app.run()
 
 TODO
-----
+====
 
 * Oauth Integration
 * Payment Processing Modules (consider stripe checkout)
