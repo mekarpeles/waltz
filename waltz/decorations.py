@@ -11,6 +11,8 @@
 
 from waltz import web, db
 import os
+import random
+import time
 from copy import copy
 
 def track(fn):
@@ -34,8 +36,29 @@ def track(fn):
         return inner
     return tracked(fn)
 
-def exponential_backoff(exception, err='expn backing off', tries=5):
-    """Decorator @exponential_backoff(Exception, err='', tries=4)"""
+def exponential_backoff(exception, err=None, tries=5, debug=False):
+    """Exponentially backoff on a certain Exception exception.
+    params:
+        tries - num of expn backed off attempts before quitting
+        err - custom error msg to display in addition to 'e'
+              q: are there any reasons why we wouldn't just want
+                 to display 'e'? Securiy reasons seem likely.
+
+    note:
+        * debug flag used to avoid raising security
+          sensitive exception err msgs     
+        * sleep may be unsafe (hence adding a psuedo random
+          scalar, still bad since not really random)
+        * Consider logging errors via
+          http://pypi.python.org/pypi/sentry
+
+    usage:
+    >>> @exponential_backoff(SomeNetworkError, tries=2)
+    ... def foo(bar):
+    ...     transfer_file(bar)
+    SomeNetworkError: [ExponentialBackoff] Timed out
+    after 2 attempts. Network failed to connect. (details: None)
+    """
     def decorator(func):
         def inner(*args, **kwargs):
             for n in range(0, tries):
@@ -44,6 +67,9 @@ def exponential_backoff(exception, err='expn backing off', tries=5):
                 except exception as e:
                     scalar = random.randint(0, 1000) / 1000.0
                     time.sleep((2 ** n) + scalar)
-                    raise exception('%s - %s' % (err, e))
+            e = e if debug else ''
+            raise exception('[Exponential Backoff] ' \
+                                'Timed out after %s attempts. ' \
+                                '%s (details: %s)' % (tries, e, err))
         return inner
     return decorator
