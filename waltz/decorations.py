@@ -29,7 +29,21 @@ def track(fn):
             ctx = copy(web.ctx['env'])
             del ctx['wsgi.errors']
             del ctx['wsgi.input']
-            db.append('analytics', ctx)
+            db().append('analytics', ctx)
             return fn(*args, **kwargs)        
         return inner
     return tracked(fn)
+
+def exponential_backoff(exception, err='expn backing off', tries=5):
+    """Decorator @exponential_backoff(Exception, err='', tries=4)"""
+    def decorator(func):
+        def inner(*args, **kwargs):
+            for n in range(0, tries):
+                try:
+                    return func(*args, **kwargs)
+                except exception as e:
+                    scalar = random.randint(0, 1000) / 1000.0
+                    time.sleep((2 ** n) + scalar)
+                    raise exception('%s - %s' % (err, e))
+        return inner
+    return decorator
