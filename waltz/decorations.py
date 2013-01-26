@@ -9,7 +9,7 @@
     :license pending
 """
 
-from waltz import web, db
+from waltz import web
 import os
 import random
 import time
@@ -31,7 +31,7 @@ def track(fn):
             ctx = copy(web.ctx['env'])
             del ctx['wsgi.errors']
             del ctx['wsgi.input']
-            db().append('analytics', ctx)
+            Db(ctx.waltz.db).append('analytics', ctx)
             return fn(*args, **kwargs)        
         return inner
     return tracked(fn)
