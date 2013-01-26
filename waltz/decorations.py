@@ -14,6 +14,7 @@ import os
 import random
 import time
 from copy import copy
+from lazydb import Db
 
 def track(fn):
     """A decorator which wraps each route with analytics tracking."""
