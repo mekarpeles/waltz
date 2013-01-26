@@ -32,7 +32,7 @@ def track(fn):
             ctx = copy(web.ctx['env'])
             del ctx['wsgi.errors']
             del ctx['wsgi.input']
-            Db(ctx.waltz.db).append('analytics', ctx)
+            Db(web.ctx['waltz']['db']).append('analytics', ctx)
             return fn(*args, **kwargs)        
         return inner
     return tracked(fn)
