@@ -32,7 +32,11 @@ def track(fn):
             ctx = copy(web.ctx['env'])
             del ctx['wsgi.errors']
             del ctx['wsgi.input']
-            Db(web.ctx['waltz']['db']).append('analytics', ctx)
+            try:
+                Db(web.ctx['waltz']['db']).append('analytics', ctx)
+            except:
+                raise Exception("Database Connection Error: "\
+                                    "web.ctx incorrecly configured.")
             return fn(*args, **kwargs)        
         return inner
     return tracked(fn)
