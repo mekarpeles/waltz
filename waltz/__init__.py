@@ -15,8 +15,53 @@ session = lambda: getattr(web.ctx, 'session', None)
 render = lambda: getattr(web.ctx, 'render', None)
 db = lambda: Db(web.ctx['waltz']['db'])
 
-from security import User
+from security import Account
 from decorations import *
 from utils import *
 from treasury import *
 from setup import *
+
+class User(Account):
+    """Extends Account to use LazyDB as Datastore"""
+    def __init__(self, uid):
+        super(User, self).__init__(uid)
+
+    @classmethod
+    def get(cls, uid=None):
+        users = db().get('users')
+        if uid:
+            return users[uid]
+        return users
+
+    @classmethod
+    def insert(cls, usr):
+        """Appends usr to users in db and returns the
+        id of the new user
+        """
+        users = db().get('users')
+        users.append(usr)
+        return len(db().put('users', users)) - 1
+
+    @classmethod
+    def update(cls, uid, func=lambda x: x):
+        """Updates a given user by applying a func to it. Defaults to
+        identity function
+        """
+        users = db().get('users')
+        user = func(users[uid])
+        users[uid] = user
+        return user
+
+    @classmethod
+    def register(cls, username, passwd, passwd2=None, email='',
+                 enabled=True, **kwargs):
+        """Calls Account's regiser method and then injects **kwargs
+        (additional user information) into the resulting dictionary.
+        """
+        if any(map(lambda usr: usr['username'] == username, cls.get())):
+            raise Exception("Username already registered")
+        usr = super(User, cls).register(username, passwd,
+                                        passwd2=passwd2, email=email)
+        usr.enabled = enabled
+        usr.update(**kwargs)
+        return cls.insert(usr)

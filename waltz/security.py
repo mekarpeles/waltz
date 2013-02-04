@@ -12,8 +12,8 @@ import random
 from utils import Storage, to36, valid_email, \
     ALPHANUMERICS as ALPHAS
 
-class User(object):
-    """The base User class provides the basic functions for allowing
+class Account(object):
+    """The base Account class provides the basic functions for allowing
     user account creation and authentication, however it should be
     extended to allow user retrieval.
     """
@@ -22,8 +22,7 @@ class User(object):
         self.public_id = to36(uid)
         self.id = uid
 
-    @classmethod
-    def query(cls, **kwargs):
+    def query(cls, uid, **kwargs):
         """Override this placeholder function to query in your super
         user class.
         """
@@ -63,7 +62,7 @@ class User(object):
             raise ValueError('Passwords do not match')
         salt = cls._salt()
         uhash = cls._roast(username + salt + passwd)        
-        return Storage(zip(('name', 'salt', 'uhash', 'email'), 
+        return Storage(zip(('username', 'salt', 'uhash', 'email'), 
                         (username, salt, uhash, email)))
 
     @classmethod
