@@ -13,6 +13,7 @@ import web
 
 session = lambda: getattr(web.ctx, 'session', None)
 render = lambda: getattr(web.ctx, 'render', None)
+slender = lambda: getattr(web.ctx, 'render', None)
 db = lambda: Db(web.ctx['waltz']['db'])
 
 from security import Account
