@@ -28,8 +28,8 @@ class User(Account):
         super(User, self).__init__(uid)
 
     @classmethod
-    def get(cls, uid=None):
-        users = db().get('users')
+    def get(cls, uid=None):        
+        users = db().get('users', {})
         if uid:
             return users[uid]
         return users
@@ -39,16 +39,18 @@ class User(Account):
         """Appends usr to users in db and returns the
         id of the new user
         """
-        users = db().get('users')
-        users.append(usr)
-        return len(db().put('users', users)) - 1
+        users = db().get('users', default={})
+        uid = len(users)
+        users[uid] = usr
+        users = db().put('users', users)
+        return uid
 
     @classmethod
     def update(cls, uid, func=lambda x: x):
         """Updates a given user by applying a func to it. Defaults to
         identity function
         """
-        users = db().get('users')
+        users = db().get('users', {})
         user = func(users[uid])
         users[uid] = user
         return user
@@ -59,7 +61,8 @@ class User(Account):
         """Calls Account's regiser method and then injects **kwargs
         (additional user information) into the resulting dictionary.
         """
-        if any(map(lambda usr: usr['username'] == username, cls.get())):
+        if any(map(lambda usr: usr['username'] == username,
+                   cls.get().values())):
             raise Exception("Username already registered")
         usr = super(User, cls).register(username, passwd,
                                         passwd2=passwd2, email=email)
