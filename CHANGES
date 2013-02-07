@@ -1,3 +1,7 @@
+v.0.1.64 Wed 06, 2013 -- Spotlight
+- Added LazyDB backed User auth module to __init__ (base classes Account)
+- Test cases for User module
+
 v.0.1.62 Sat 20, 2013 -- Spotlight
 - Added PeriodicReloader via reloader.py
 

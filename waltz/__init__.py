@@ -2,7 +2,7 @@
 
 """waltz: make web apps in 3/4 time (http://github.com/mekarpeles/waltz)"""
 
-__version__ = "0.1.62"
+__version__ = "0.1.64"
 __author__ = [
     "Mek <michael.karpeles@gmail.com>"
 ]
@@ -12,8 +12,12 @@ __contributors__ = "see AUTHORS"
 import web
 
 session = lambda: getattr(web.ctx, 'session', None)
+# render: renders a template through base template base.html
+# (unless base template name is overridden)
 render = lambda: getattr(web.ctx, 'render', None)
+# slim render: renders a template by itself with no base template
 slender = lambda: getattr(web.ctx, 'render', None)
+# db for waltz analytics, etc.
 db = lambda: Db(web.ctx['waltz']['db'])
 
 from security import Account
@@ -24,23 +28,31 @@ from setup import *
 
 class User(Account):
     """Extends Account to use LazyDB as Datastore"""
-    def __init__(self, uid):
-        super(User, self).__init__(uid)
 
     @classmethod
-    def get(cls, uid=None):        
+    def get(cls, uid=None, safe=False):
         users = db().get('users', {})
         if uid:
-            return users[uid]
+            try:
+                user = users[uid]
+                if safe:
+                    del user['salt']
+                    del user['uhash']
+                return users[uid]
+            except:
+                return None
         return users
 
     @classmethod
-    def insert(cls, usr):
+    def insert(cls, usr, pkey='username'):
         """Appends usr to users in db and returns the
-        id of the new user
+        id of the new user.
+        
+        params:
+            usr - dictionary or Storage
         """
         users = db().get('users', default={})
-        uid = len(users)
+        uid = usr[pkey]
         users[uid] = usr
         users = db().put('users', users)
         return uid
@@ -57,11 +69,39 @@ class User(Account):
         return user
 
     @classmethod
+    def delete(cls, uid):
+        users = db().get('users', {})
+        try:
+            del users[uid]
+            return db().put('users', users)
+        except KeyError:
+            return False
+
+    @classmethod
+    def easyauth(cls, u, passwd):
+        """New-style auth which takes a user dict and a passwd
+
+        params:
+            u - a user dict with (at least) items:
+                ['salt', 'uhash', 'username']
+        """
+        if u and all(key in u for key in ['username', 'salt', 'uhash']):
+            return cls.authenticate(u['username'], passwd, # user provided
+                                    u['salt'], u['uhash']) # db provided
+        raise TypeError("Account._auth expects user object 'u' with " \
+                            "keys: ['salt', 'uhash', 'username']. " \
+                            "One or more items missing from user dict u.")
+
+    @classmethod
     def register(cls, username, passwd, passwd2=None, email='',
-                 enabled=True, **kwargs):
+                 enabled=True, pkey="username", **kwargs):
         """Calls Account's regiser method and then injects **kwargs
         (additional user information) into the resulting dictionary.
+        
+        XXX Additional constraints required (like check for multiple
+        emails + other keys which should be 'unique')
         """
+        print cls.get()
         if any(map(lambda usr: usr['username'] == username,
                    cls.get().values())):
             raise Exception("Username already registered")
@@ -69,4 +109,5 @@ class User(Account):
                                         passwd2=passwd2, email=email)
         usr.enabled = enabled
         usr.update(**kwargs)
-        return cls.insert(usr)
+        uid = cls.insert(usr, pkey=pkey)
+        return usr
