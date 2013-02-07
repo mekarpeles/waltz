@@ -46,13 +46,10 @@ class Account(object):
         handling (db insertion, etc). Note: For security reasons,
         plaintext passwords are never returned and should not be
         stored in a db unless there's a very specific reason to.
-
         XXXX Consider taking **kwargs:
             password_validator - lambda for validating passwd (chars, len)
             username_validator - lambda for validating username (len, etc)
-        """
-        
-        if not passwd: raise ValueError('Password Required')
+        """        
         if not passwd: raise ValueError('Password Required')
 
         if email and not valid_email(email):

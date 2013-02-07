@@ -12,8 +12,12 @@ __contributors__ = "see AUTHORS"
 import web
 
 session = lambda: getattr(web.ctx, 'session', None)
+# render: renders a template through base template base.html
+# (unless base template name is overridden)
 render = lambda: getattr(web.ctx, 'render', None)
+# slim render: renders a template by itself with no base template
 slender = lambda: getattr(web.ctx, 'render', None)
+# db for waltz analytics, etc.
 db = lambda: Db(web.ctx['waltz']['db'])
 
 from security import Account
@@ -28,19 +32,25 @@ class User(Account):
         super(User, self).__init__(uid)
 
     @classmethod
-    def get(cls, uid=None):        
+    def get(cls, uid=None):
         users = db().get('users', {})
         if uid:
-            return users[uid]
+            try:
+                return users[uid]
+            except:
+                return None
         return users
 
     @classmethod
-    def insert(cls, usr):
+    def insert(cls, usr, pkey='username'):
         """Appends usr to users in db and returns the
-        id of the new user
+        id of the new user.
+        
+        params:
+            usr - dictionary or Storage
         """
         users = db().get('users', default={})
-        uid = len(users)
+        uid = usr[pkey]
         users[uid] = usr
         users = db().put('users', users)
         return uid
@@ -56,10 +66,28 @@ class User(Account):
         return user
 
     @classmethod
+    def easyauth(cls, u, passwd):
+        """New-style auth which takes a user dict and a passwd
+
+        params:
+            u - a user dict with (at least) items:
+                ['salt', 'uhash', 'username']
+        """
+        if u and all(key in ['username', 'salt', 'uhash'] for key in u):
+            return cls.authenticate(u['username'], passwd, # user provided
+                                    u['salt'], u['uhash']) # db provided
+        raise TypeError("Account._auth expects user object 'u' with " \
+                            "keys: ['salt', 'uhash', 'username']. " \
+                            "One or more items missing from user dict u.")
+
+    @classmethod
     def register(cls, username, passwd, passwd2=None, email='',
                  enabled=True, **kwargs):
         """Calls Account's regiser method and then injects **kwargs
         (additional user information) into the resulting dictionary.
+        
+        XXX Additional constraints required (like check for multiple
+        emails + other keys which should be 'unique')
         """
         if any(map(lambda usr: usr['username'] == username,
                    cls.get().values())):
@@ -68,4 +96,5 @@ class User(Account):
                                         passwd2=passwd2, email=email)
         usr.enabled = enabled
         usr.update(**kwargs)
-        return cls.insert(usr)
+        uid = cls.insert(usr)
+        return usr
