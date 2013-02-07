@@ -82,7 +82,7 @@ class User(Account):
 
     @classmethod
     def register(cls, username, passwd, passwd2=None, email='',
-                 enabled=True, **kwargs):
+                 enabled=True, pkey="username", **kwargs):
         """Calls Account's regiser method and then injects **kwargs
         (additional user information) into the resulting dictionary.
         
@@ -96,5 +96,5 @@ class User(Account):
                                         passwd2=passwd2, email=email)
         usr.enabled = enabled
         usr.update(**kwargs)
-        uid = cls.insert(usr)
+        uid = cls.insert(usr, pkey=pkey)
         return usr
