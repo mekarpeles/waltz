@@ -53,6 +53,7 @@ class User(Account):
         users = db().get('users', {})
         user = func(users[uid])
         users[uid] = user
+        db().put('users', users)
         return user
 
     @classmethod
