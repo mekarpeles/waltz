@@ -28,7 +28,6 @@ setup(
         'lazydb >= 0.1.6',
         'web.py >= 0.36',
         'lepl >= 5.1.3',
-        'paste >= 1.7.5.1'
     ],
     description="Waltz is a web.py framework for designing web apps in 3/4 time.",
     long_description=open('README.txt').read(),
