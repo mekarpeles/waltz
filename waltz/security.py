@@ -17,16 +17,6 @@ class Account(object):
     user account creation and authentication, however it should be
     extended to allow user retrieval.
     """
-    def __init__(self, uid):
-        """Should be extended to retrieve a User by id"""
-        self.public_id = to36(uid)
-        self.id = uid
-
-    def query(cls, uid, **kwargs):
-        """Override this placeholder function to query in your super
-        user class.
-        """
-        pass
 
     @classmethod
     def authenticate(cls, username, passwd, salt, uhash):

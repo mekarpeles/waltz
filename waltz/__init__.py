@@ -28,8 +28,6 @@ from setup import *
 
 class User(Account):
     """Extends Account to use LazyDB as Datastore"""
-    def __init__(self, uid):
-        super(User, self).__init__(uid)
 
     @classmethod
     def get(cls, uid=None):
@@ -66,6 +64,15 @@ class User(Account):
         return user
 
     @classmethod
+    def delete(cls, uid):
+        users = db().get('users', {})
+        try:
+            del users[uid]
+            return db().put('users', users)
+        except KeyError:
+            return False
+
+    @classmethod
     def easyauth(cls, u, passwd):
         """New-style auth which takes a user dict and a passwd
 
@@ -89,8 +96,9 @@ class User(Account):
         XXX Additional constraints required (like check for multiple
         emails + other keys which should be 'unique')
         """
+        print cls.get()
         if any(map(lambda usr: usr['username'] == username,
-                   cls.get())):
+                   cls.get().values())):
             raise Exception("Username already registered")
         usr = super(User, cls).register(username, passwd,
                                         passwd2=passwd2, email=email)
