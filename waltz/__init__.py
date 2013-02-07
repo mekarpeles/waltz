@@ -90,7 +90,7 @@ class User(Account):
         emails + other keys which should be 'unique')
         """
         if any(map(lambda usr: usr['username'] == username,
-                   cls.get().values())):
+                   cls.get())):
             raise Exception("Username already registered")
         usr = super(User, cls).register(username, passwd,
                                         passwd2=passwd2, email=email)
