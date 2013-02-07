@@ -30,10 +30,14 @@ class User(Account):
     """Extends Account to use LazyDB as Datastore"""
 
     @classmethod
-    def get(cls, uid=None):
+    def get(cls, uid=None, safe=False):
         users = db().get('users', {})
         if uid:
             try:
+                user = users[uid]
+                if safe:
+                    del user['salt']
+                    del user['uhash']
                 return users[uid]
             except:
                 return None
@@ -80,7 +84,7 @@ class User(Account):
             u - a user dict with (at least) items:
                 ['salt', 'uhash', 'username']
         """
-        if u and all(key in ['username', 'salt', 'uhash'] for key in u):
+        if u and all(key in u for key in ['username', 'salt', 'uhash']):
             return cls.authenticate(u['username'], passwd, # user provided
                                     u['salt'], u['uhash']) # db provided
         raise TypeError("Account._auth expects user object 'u' with " \
