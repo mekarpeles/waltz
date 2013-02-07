@@ -1,6 +1,6 @@
 # Waltz
 
-Waltz (v.0.1.62) is a web.py based web framework for rapidly designing
+Waltz (v.0.1.64) is a web.py based web framework for rapidly designing
 web apps in 3/4 time. Waltz comes pre-configured, ready to run, and
 includes features like out-of-the-box support for analytics
 tracking. Waltz and never miss a beat.
@@ -13,7 +13,8 @@ You may wish to install with the --upgrade flag since updates pushed are frequen
 
 ## Example
 
-Feel free to clone the following code snippet from https://gist.github.com/4584751.git or wget the raw main.py file from https://gist.github.com/raw/4584751/08ed11e5aa774a3a224f1c3d903562b9f5366775/main.py
+Feel free to clone the following code snippet from
+https://gist.github.com/4584751.git or wget the raw main.py file from https://gist.github.com/raw/4584751/main.py
 
 Typical usage often looks like this:
 
@@ -44,6 +45,7 @@ Typical usage often looks like this:
 
     if __name__ == "__main__":
         app.run()
+
 
 ## TODO
 
