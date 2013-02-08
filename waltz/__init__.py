@@ -58,6 +58,13 @@ class User(Account):
         return uid
 
     @classmethod
+    def replace(cls, uid, usr):
+        users = db().get('users', {})
+        users[uid] = usr
+        db().put('users' users)
+        return usr
+
+    @classmethod
     def update(cls, uid, func=lambda x: x):
         """Updates a given user by applying a func to it. Defaults to
         identity function
