@@ -61,7 +61,7 @@ class User(Account):
     def replace(cls, uid, usr):
         users = db().get('users', {})
         users[uid] = usr
-        db().put('users' users)
+        db().put('users', users)
         return usr
 
     @classmethod

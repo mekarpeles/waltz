@@ -14,8 +14,9 @@ class TestWaltz(unittest.TestCase):
         web.ctx.waltz.db = 'db'
         extras = {"skill": 9001, "id": 1337}
         username = 'dancer'
-        u1 = User.register(username, "*****", **extras)
+        u1 = User.register(username, "abc123", **extras)
         u2 = User.get(username)
+        u3 = User.register(username[::-1], "abc123", **extras)
         self.assertTrue(u1['username'] == username,
                         "<waltz.User.register> Registration " \
                             "returned invalid user dict")
@@ -25,6 +26,9 @@ class TestWaltz(unittest.TestCase):
         self.assertTrue(u2['skill'] == 9001, "<waltz.User.get> " \
                             "Expected stored data did not match " \
                             "actual data indexed by waltz 'user' LazyDB.")
+        User.replace(username, u3)
+        self.assertTrue(User.get(username)['username'] == username[::-1],
+                        "<waltz.User.replace> Failed to replace username")
         self.assertTrue(User.delete(username) is not None,
                         "<waltz.User.delete> " \
                             "Failed to delete user: %s" % username)
