@@ -11,43 +11,10 @@ You may wish to install with the --upgrade flag since updates pushed are frequen
 
     pip install waltz
 
-## Example
+Running
+=======
 
-Feel free to clone the following code snippet from
-https://gist.github.com/4584751.git or wget the raw main.py file from https://gist.github.com/raw/4584751/main.py
-
-Typical usage often looks like this:
-
-    #!/usr/bin/env Python
-
-    import waltz
-    from waltz import track, db, render, session
-
-    urls = ('/session', 'Session',
-           '/analytics', 'Analytics',
-           '/', 'Index')
-
-    sessions = {'cart': waltz.Cart()}
-    app = waltz.setup.dancefloor(urls, globals(), sessions=sessions)
-
-    class Index:
-        @track
-        def GET(self):
-            return render().index()
-
-    class Session:
-        def GET(self):
-            return session()
-
-    class Analytics:
-        def GET(self):
-            return db.get('analytics')
-
-    if __name__ == "__main__":
-        app.run()
-
-
-## TODO
-
-* Oauth Integration
-* Payment Processing Modules (consider stripe checkout)
+    $ mkidir project
+    $ cd project
+    $ walt init
+    $ python main.py <port>
