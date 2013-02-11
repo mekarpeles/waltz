@@ -22,13 +22,15 @@ setup(
         'waltz',
         ],
     platforms='any',
-    scripts=[],
     license='LICENSE',
     install_requires=[
         'lazydb >= 0.1.6',
         'web.py >= 0.36',
         'lepl >= 5.1.3',
     ],
+    scripts=[
+        "scripts/waltz"
+        ],
     description="Waltz is a web.py framework for designing web apps in 3/4 time.",
     long_description=open('README.txt').read(),
 )

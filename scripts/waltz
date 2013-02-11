@@ -1,0 +1,51 @@
+#!/usr/bin/python
+#-*- coding: utf-8 -*-
+
+import argparse
+import os
+import sys
+
+mainpy = """#!/usr/bin/python
+#-*- coding: utf-8 -*-
+
+import waltz
+from waltz import track, session, render, db
+
+urls = ('/analytics/?', 'Analytics',
+        '/?', 'Index')
+
+sessions = {}
+app = waltz.setup.dancefloor(urls, globals(), sessions=sessions)
+
+class Index:
+    @track
+    def GET(self):
+        return render().index()
+
+class Analytics:
+    def GET(self):
+        return db().get('analytics')
+
+if __name__ == "__main__":
+    app.run()
+"""
+
+parser = argparse.ArgumentParser(description="Waltz is a web.py framework for designing web apps in 3/4 time")
+parser.add_argument('init', nargs='?', metavar='init',
+                    help="Start a waltz application")
+parser.add_argument('--name', dest='name', default="main.py",
+                    help='Specify a name ')
+args = parser.parse_args()
+
+if len(sys.argv)==1:
+   parser.print_help()
+   
+if args.init:
+   name = "main.py"
+   if args.name:      
+      name = args.name
+      if not ".py" in name:
+         name = name + ".py"
+   with open("%s/%s" % (os.getcwd(), name), 'w') as f:
+      f.write(mainpy)
+
