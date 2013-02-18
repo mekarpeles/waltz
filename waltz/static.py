@@ -32,8 +32,8 @@ base = """$def with (content)
 	    activate Google Chrome Frame</a> to improve your experience.</a>
         <![endif]-->
 
-    <div id="header">
-    </div>
+    <header>
+    </header>
 
     <div id="content">
       $:content
