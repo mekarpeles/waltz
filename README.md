@@ -16,5 +16,5 @@ Running
 
     $ mkidir project
     $ cd project
-    $ walt init
+    $ waltz init
     $ python main.py <port>
