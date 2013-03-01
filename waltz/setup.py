@@ -7,10 +7,12 @@
     Sessions and authentication, templates, etc.
 """
 
-import web
 import os
+import web
+from web import wsgiserver
 from functools import partial
 from reloader import PeriodicReloader
+_https = wsgiserver.CherryPyWSGIServer
 
 def dancefloor(urls, fvars, sessions=False, autoreload=False,
                debug=True, **kwargs):
@@ -36,6 +38,9 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
     app = web.application(_preprocess(urls), fvars, autoreload=autoreload)
     env = {'ctx': web.ctx}
     env.update(kwargs.get('env', {}))
+
+    if type(kwargs.get('ssl', None)) is tuple:        
+        _https.ssl_certificate, _https.ssl_private_key = kwargs.get('ssl')
 
     def setup_rendering():
         html = partial(web.template.render, '%s/templates/' % os.getcwd())
