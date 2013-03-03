@@ -25,6 +25,7 @@ from decorations import *
 from utils import *
 from treasury import *
 from setup import *
+from modules import rss
 
 class User(Account):
     """Extends Account to use LazyDB as Datastore"""
