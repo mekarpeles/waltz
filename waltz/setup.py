@@ -46,7 +46,9 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
         html = partial(web.template.render, '%s/templates/' % os.getcwd())
         slender = html(globals=env)
         render = html(base='base', globals=env)
-        def render_hook(): web.ctx.render = render
+        def render_hook():
+            web.ctx.render = render
+            web.ctx.slender = slender
         app.add_processor(web.loadhook(render_hook))
         env['render'] = slender
 

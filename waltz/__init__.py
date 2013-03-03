@@ -16,7 +16,7 @@ session = lambda: getattr(web.ctx, 'session', None)
 # (unless base template name is overridden)
 render = lambda: getattr(web.ctx, 'render', None)
 # slim render: renders a template by itself with no base template
-slender = lambda: getattr(web.ctx, 'render', None)
+slender = lambda: getattr(web.ctx, 'slender', None)
 # db for waltz analytics, etc.
 db = lambda: Db(web.ctx['waltz']['db'])
 
