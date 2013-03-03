@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-   ballroom.utils
-   ~~~~~~~~~~~~~~
+   utils
+   ~~~~~
 
    A collection of utility functions and constants, many which were
    originally authored by Aaron Swartz, Anand Chitipothu, and the
