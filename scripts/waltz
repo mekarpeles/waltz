@@ -11,20 +11,17 @@ mainpy = """#!/usr/bin/python
 import waltz
 from waltz import track, session, render, db
 
-urls = ('/analytics/?', 'Analytics',
+urls = ('/analytics/?', 'waltz.modules.Analytics',
         '/?', 'Index')
 
 sessions = {}
-app = waltz.setup.dancefloor(urls, globals(), sessions=sessions)
+env = {}
+app = waltz.setup.dancefloor(urls, globals(), sessions=sessions, env=env)
 
 class Index:
     @track
     def GET(self):
         return render().index()
-
-class Analytics:
-    def GET(self):
-        return db().get('analytics')
 
 if __name__ == "__main__":
     app.run()
