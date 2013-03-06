@@ -9,7 +9,7 @@ mainpy = """#!/usr/bin/python
 #-*- coding: utf-8 -*-
 
 import waltz
-from waltz import track, session, render, db
+from waltz import track, render
 
 urls = ('/analytics/?', 'waltz.modules.Analytics',
         '/?', 'Index')
