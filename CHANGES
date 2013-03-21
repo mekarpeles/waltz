@@ -1,4 +1,8 @@
-v.0.1.65 Sun, 03, 2013 -- Pirouette (minor)
+v.0.1.66 Wed, 20, 2013 -- Spotlight (major)
+- main.py callable from any directory (not just app root)
+-- fix allows nginx and apache to invoke main.py
+
+v.0.1.65 Sun, 03, 2013 -- Spotlight (minor)
 - fixed slender bug (waltz.slender was referencing waltz.render)
 - Removed Analytics class from main.py (waltz init), migrated to waltz.modules.Analytics
 - added rss support, waltz.rss

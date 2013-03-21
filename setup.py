@@ -14,7 +14,7 @@ from distutils.core import setup
 
 setup(
     name='waltz',
-    version='0.1.65',
+    version='0.1.66',
     url='http://github.com/mekarpeles/waltz',
     author='mek',
     author_email='michael.karpeles@gmail.com',
