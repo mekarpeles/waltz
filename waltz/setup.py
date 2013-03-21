@@ -34,7 +34,8 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
                         an alternate path besides the default, 'sessions/'
         session - a dictionary representing a default init'd session
     """
-    init_scaffolding(**kwargs)
+    _path = os.path.dirname(os.path.realpath(fvars['__file__']))
+    init_scaffolding(_path, **kwargs)
     app = web.application(_preprocess(urls), fvars, autoreload=autoreload)
     env = {'ctx': web.ctx}
     env.update(kwargs.get('env', {}))
@@ -43,7 +44,7 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
         _https.ssl_certificate, _https.ssl_private_key = kwargs.get('ssl')
 
     def setup_rendering():
-        html = partial(web.template.render, '%s/templates/' % os.getcwd())
+        html = partial(web.template.render, '%s/templates/' % _path)
         slender = html(globals=env)
         render = html(base='base', globals=env)
         def render_hook():
@@ -59,7 +60,7 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
         def default_store():
             """Default method of storing session: DiskStore
             created directory sessions/ by default to store sessions"""
-            path = os.getcwd() + '/sessions'
+            path = _path + '/sessions'
             if not os.path.exists(path):
                 os.makedirs(path)
             return web.session.DiskStore(path)
@@ -72,7 +73,7 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
         web.config.debug = debug        
         if debug:
             PeriodicReloader()
-        db = kwargs.get('db', "%s/db" % os.getcwd())
+        db = kwargs.get('db', "%s/db" % _path)
         def waltz_hook():
             web.ctx.waltz = {"debug": debug, "db": db}
         app.add_processor(web.loadhook(waltz_hook))        
@@ -95,14 +96,14 @@ def init_sessions(web, app, store, session):
     app.add_processor(web.loadhook(inject_session))
     return session
 
-def init_scaffolding(**kwargs):
+def init_scaffolding(_path, **kwargs):
     """Builds scaffolding for the project:
     static/, templates/, routes/, subapps/"""
 
     def build_static():
         """Builds a static/ directory within the project
         with subdirs: static/css, static/js, and static/imgs"""
-        path = os.getcwd() + '/static'
+        path = _path + '/static'
         if not os.path.exists(path):
             os.makedirs(path)
         for subdir in ['css', 'js', 'imgs']:
@@ -113,7 +114,7 @@ def init_scaffolding(**kwargs):
     def build_routes():
         """Creates directories + __init__ files for route logic"""
         for d in ['routes', 'subapps']:
-            path = '%s/%s' % (os.getcwd(), d)
+            path = '%s/%s' % (_path, d)
             if not os.path.exists(path):
                 os.makedirs(path)
                 fname = '%s/%s' % (path, '__init__.py')
@@ -122,7 +123,7 @@ def init_scaffolding(**kwargs):
     def build_templates():
         """Builds the templates/ directory"""
         from waltz.static import base, index
-        path = '%s/templates' % os.getcwd()
+        path = '%s/templates' % _path
         if not os.path.exists(path):
             os.makedirs(path)
         for fname, content in [('base', base), ('index', index)]:
