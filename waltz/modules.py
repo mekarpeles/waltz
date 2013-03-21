@@ -1,6 +1,6 @@
 """
-   moddules
-   ~~~~~~~~
+   modules
+   ~~~~~~~
    Modules/plugins + extras for the waltz framework
 """
 
