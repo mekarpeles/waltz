@@ -10,6 +10,7 @@ __license__ = "public domain"
 __contributors__ = "see AUTHORS"
 
 import web
+from lazydb import Db
 
 session = lambda: getattr(web.ctx, 'session', None)
 # render: renders a template through base template base.html
@@ -31,8 +32,17 @@ class User(Account):
     """Extends Account to use LazyDB as Datastore"""
 
     @classmethod
-    def get(cls, uid=None, safe=False):
-        users = db().get('users', {})
+    def get(cls, uid=None, safe=False, db=db):
+        """
+        params:
+            uid - the user id which to fetch
+            safe - return users without secure fields like salt and hash
+            db - provide your own instantiated lazydb.Db() connector
+        """
+        def _db():
+            return db if type(db) is Db else db()
+            
+        users = _db().get('users', {})
         if uid:
             try:
                 user = users[uid]
