@@ -11,6 +11,7 @@
 """
 
 from distutils.core import setup
+import os
 
 setup(
     name='waltz',
@@ -32,5 +33,5 @@ setup(
         "scripts/waltz"
         ],
     description="Waltz is a web.py framework for designing web apps in 3/4 time.",
-    long_description=open('README.md').read(),
+    long_description=open(os.path.join(os.path.dirname(__file__), 'README.md')).read(),
 )
