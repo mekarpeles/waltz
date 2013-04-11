@@ -42,7 +42,8 @@ class User(Storage, Account):
             setattr(self, k, v)
 
     def __repr__(self):     
-        return '<User ' + dict.__repr__(self) + '>'
+        #return '<User ' + dict.__repr__(self) + '>'
+        return '<User ' + repr(self._publishable(dict(self))) + '>'
 
     def save(self):
         """save the state of the current user in the db; replace
