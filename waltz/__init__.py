@@ -27,9 +27,38 @@ from utils import *
 from treasury import *
 from setup import *
 from modules import rss
+from utils import Storage
 
-class User(Account):
+class User(Storage, Account):
     """Extends Account to use LazyDB as Datastore"""
+
+    def __init__(self, uid):
+        """
+        TODO:
+        * Provide ability to self.save()
+        * Extend __init__ to populate User obj as Storage
+        """
+        for k, v in self.get(uid).items():
+            setattr(self, k, v)
+
+    def __repr__(self):     
+        #return '<User ' + dict.__repr__(self) + '>'
+        return '<User ' + repr(self._publishable(dict(self))) + '>'
+
+    def save(self):
+        """save the state of the current user in the db; replace
+        existing databased user (if it exists) with this instance of
+        the User or insert this User otherwise
+        """
+        pass
+
+    @classmethod
+    def getall(cls, db=db, safe=False):
+        users = db().get('users', default={})
+        if safe:
+            for user in users:
+                users[user] = cls._publishable(users[user])
+        return users
 
     @classmethod
     def get(cls, uid=None, safe=False, db=db):
@@ -42,17 +71,27 @@ class User(Account):
         def _db():
             return db if type(db) is Db else db()
             
-        users = _db().get('users', {})
         if uid:
-            try:
-                user = users[uid]
-                if safe:
-                    del user['salt']
-                    del user['uhash']
-                return users[uid]
-            except:
-                return None
-        return users
+            users = cls.getall(db=db)
+            #try:
+            user = users[uid]
+            if safe:
+                user = cls._publishable(user)
+            return user
+            #except:
+            #    return None
+        return cls.getall(db=db, safe=safe)
+
+    @classmethod
+    def _publishable(cls, usr, *args):
+        """Make this user publishable. Removes fields from a user
+        which would be undesirable to publish publicly, like salt or
+        hash. Can take an arbitrary list of additional keys to
+        scrub/remove"""
+        keys = set(args + ('uhash', 'salt'))
+        for key in keys:
+            del usr[key]
+        return usr
 
     @classmethod
     def insert(cls, usr, pkey='username'):
@@ -111,21 +150,50 @@ class User(Account):
                             "One or more items missing from user dict u.")
 
     @classmethod
-    def register(cls, username, passwd, passwd2=None, email='',
+    def register(cls, username, passwd, passwd2=None, email='', salt='',
                  enabled=True, pkey="username", **kwargs):
         """Calls Account's regiser method and then injects **kwargs
         (additional user information) into the resulting dictionary.
         
         XXX Additional constraints required (like check for multiple
         emails + other keys which should be 'unique')
+
+        :param pkey: the string name of the key which will be used as
+                     a primary key for storing/referencing/indexing
+                     this user within lazydb
+        usage:
+        >>> from waltz import User
+        >>> User.register("username", "password", passwd2="password",
+        ...               email="username@domain.org", salt='123456789',
+        ...               pkey="email")
+        <Storage {'username': 'username', 'uhash': '021d98a32375ed850f459fe484c3ab2e352fc2801ef13eae274103befc9d0274', 'salt': '123456789', 'email': 'username@domain.org'}>
         """
-        print cls.get()
-        if any(map(lambda usr: usr['username'] == username,
-                   cls.get().values())):
-            raise Exception("Username already registered")
-        usr = super(User, cls).register(username, passwd,
-                                        passwd2=passwd2, email=email)
-        usr.enabled = enabled
-        usr.update(**kwargs)
-        uid = cls.insert(usr, pkey=pkey)
-        return usr
+        def check_registered(username):
+            if any(map(lambda usr: usr['username'] == username,
+                       cls.get().values())):
+                raise Exception("Username already registered")
+        
+        user = super(User, cls).register(username, passwd, passwd2=passwd2,
+                                         email=email, salt=salt, **kwargs)
+        user.enabled = enabled
+        uid = cls.insert(user, pkey=pkey)
+        return user
+
+    @classmethod
+    def registered(username):
+        """predicate which answers whether a username exists in the User db.
+
+        XXX registered() should be made more flexible to accomodate
+        for keys other than username in the case where there are
+        UNIQUEness constraints on user attributes, such as email. This
+        may mean providing **kwargs of unique User attributes and
+        values and iterating over each user in the Db (this linear
+        approach is a caveat of lazydb) to ensure UNIQUEness.
+
+        >>> from waltz import User
+        >>> User.registered("username")
+        True
+        >>> User.registered("Guido van Rossum")
+        False
+        """
+        pass
