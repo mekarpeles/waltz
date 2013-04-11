@@ -32,5 +32,5 @@ setup(
         "scripts/waltz"
         ],
     description="Waltz is a web.py framework for designing web apps in 3/4 time.",
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
 )

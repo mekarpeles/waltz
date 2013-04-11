@@ -1,6 +1,7 @@
 v.0.1.66 Wed, 20, 2013 -- Spotlight (major)
 - main.py callable from any directory (not just app root)
 -- fix allows nginx and apache to invoke main.py
+- Added test cases for User + Account
 
 v.0.1.65 Sun, 03, 2013 -- Spotlight (minor)
 - fixed slender bug (waltz.slender was referencing waltz.render)
