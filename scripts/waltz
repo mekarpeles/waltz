@@ -9,23 +9,48 @@ from waltz import setup
 mainpy = """#!/usr/bin/python
 #-*- coding: utf-8 -*-
 
+\"\"\"
+    main.py
+    ~~~~~~~
+
+    Main waltz application.
+
+    :copyright: (c) __ by __.
+    :license: __ , see LICENSE for more details.
+\"\"\"
+
 import waltz
-from waltz import track, render
 
 urls = ('/analytics/?', 'waltz.modules.Analytics',
-        '/?', 'Index')
+        '/?', 'routes.home.Index')
 
 sessions = {}
 env = {}
 app = waltz.setup.dancefloor(urls, globals(), sessions=sessions, env=env)
 
+if __name__ == "__main__":
+    app.run()
+"""
+
+homepy = """#-*- coding: utf-8 -*-
+
+\"\"\"
+    routes.home
+    ~~~~~~~~~~~
+
+    Routes related to the homepage.
+
+    :copyright: (c) __ by __.
+    :license: __ , see LICENSE for more details.
+\"\"\"
+
+import waltz
+from waltz import track, render
+
 class Index:
     @track
     def GET(self):
         return render().index()
-
-if __name__ == "__main__":
-    app.run()
 """
 
 def argparser():
@@ -51,7 +76,8 @@ if __name__ == "__main__":
         if not ".py" in name:
             name = name + ".py"
 
+    setup.init_scaffolding(os.getcwd())
     with open("%s/%s" % (os.getcwd(), name), 'w') as f:
         f.write(mainpy)
-    setup.init_scaffolding(os.getcwd())
-
+    with open("%s/routes/home.py" % os.getcwd(), 'w') as f:
+        f.write(homepy)
