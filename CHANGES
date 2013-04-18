@@ -1,25 +1,28 @@
-v.0.1.66 Wed, 20, 2013 -- Spotlight (major)
+v.0.1.68 Thu 18 April 2013 -- Spotlight
+- scaffolding migrated from waltz.setup to waltz init script
+
+v.0.1.66 Wed 20 March 2013 -- Spotlight (major)
 - main.py callable from any directory (not just app root)
 -- fix allows nginx and apache to invoke main.py
 - Added test cases for User + Account
 
-v.0.1.65 Sun, 03, 2013 -- Spotlight (minor)
+v.0.1.65 Sun 03 March 2013 -- Spotlight (minor)
 - fixed slender bug (waltz.slender was referencing waltz.render)
 - Removed Analytics class from main.py (waltz init), migrated to waltz.modules.Analytics
 - added rss support, waltz.rss
 
-v.0.1.64 Wed 06, 2013 -- Spotlight
+v.0.1.64 Wed 06 February 2013 -- Spotlight
 - Added LazyDB backed User auth module to __init__ (base classes Account)
 - Test cases for User module
 - Added waltz init cli utility
 
-v.0.1.62 Sat 20, 2013 -- Spotlight
+v.0.1.62 Sat 20 January 2013 -- Spotlight
 - Added PeriodicReloader via reloader.py
 
-v.0.1.6 Sat 20, 2013 -- Spotlight
+v.0.1.6 Sat 20 January 2013 -- Spotlight
 - Waltz is now a standalone module
 
-v.0.1.4, Sat 19, 2013 -- Ballet Shoes
+v.0.1.4, Sat 19 December 2012 -- Ballet Shoes
 - Added shopping cart
 - Session Support
 - New css templates
