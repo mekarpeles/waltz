@@ -2,7 +2,7 @@
 
 """waltz: make web apps in 3/4 time (http://github.com/mekarpeles/waltz)"""
 
-__version__ = "0.1.66"
+__version__ = "0.1.68"
 __author__ = [
     "Mek <michael.karpeles@gmail.com>"
 ]
@@ -73,13 +73,13 @@ class User(Storage, Account):
             
         if uid:
             users = cls.getall(db=db)
-            #try:
-            user = users[uid]
-            if safe:
-                user = cls._publishable(user)
-            return user
-            #except:
-            #    return None
+            try:
+                user = users[uid]
+                if safe:
+                    user = cls._publishable(user)
+                return user
+            except:
+                return None
         return cls.getall(db=db, safe=safe)
 
     @classmethod
