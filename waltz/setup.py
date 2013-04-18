@@ -35,7 +35,6 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
         session - a dictionary representing a default init'd session
     """
     _path = os.path.dirname(os.path.realpath(fvars['__file__']))
-    init_scaffolding(_path, **kwargs)
     app = web.application(_preprocess(urls), fvars, autoreload=autoreload)
     env = {'ctx': web.ctx}
     env.update(kwargs.get('env', {}))
