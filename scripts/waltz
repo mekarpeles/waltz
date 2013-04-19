@@ -64,11 +64,13 @@ def argparser():
 
 
 if __name__ == "__main__":
-    args = argparser().parse_args()
+    parser = argparser()
+    args = parser.parse_args()
 
-    if len(sys.argv) == 1:
+    if not args.init:
         parser.print_help()
-   
+        sys.exit()
+
     if args.init:
         name = "main.py"
         if args.name:      
