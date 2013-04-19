@@ -53,6 +53,8 @@ class Index:
         return render().index()
 """
 
+homepypath = "%s/routes/home.py" % os.getcwd()
+
 def argparser():
     parser = argparse.ArgumentParser(description="Waltz is a web.py framework " \
                                          "for designing web apps in 3/4 time")
@@ -62,6 +64,12 @@ def argparser():
                         help='Specify a name ')
     return parser
 
+
+def create_file(filepath, contents, overwrite=False):
+    """Create a file at filepath with contents"""
+    if overwrite or not os.path.isfile(filepath):
+        with open(filepath, 'w') as f:
+            f.write(contents)
 
 if __name__ == "__main__":
     parser = argparser()
@@ -77,9 +85,8 @@ if __name__ == "__main__":
             name = args.name
         if not ".py" in name:
             name = name + ".py"
+        mainpypath ="%s/%s" % (os.getcwd(), name)
 
     setup.init_scaffolding(os.getcwd())
-    with open("%s/%s" % (os.getcwd(), name), 'w') as f:
-        f.write(mainpy)
-    with open("%s/routes/home.py" % os.getcwd(), 'w') as f:
-        f.write(homepy)
+    create_file(mainpypath, mainpy, overwrite=False)
+    create_file(homepypath, homepy, overwrite=False)
