@@ -1,4 +1,1 @@
-include *.txt
-include *.html
 include *.md
-recursive-includes docs *.txt
