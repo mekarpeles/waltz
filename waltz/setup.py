@@ -95,13 +95,14 @@ def init_sessions(web, app, store, session):
     app.add_processor(web.loadhook(inject_session))
     return session
 
-def init_scaffolding(_path, **kwargs):
+def init_scaffolding(_path, appname="main.py", **kwargs):
     """Builds scaffolding for the project:
     static/, templates/, routes/, subapps/"""
 
     def build_static():
         """Builds a static/ directory within the project
         with subdirs: static/css, static/js, and static/imgs"""
+        from waltz.static import style
         path = _path + '/static'
         if not os.path.exists(path):
             os.makedirs(path)
@@ -109,6 +110,10 @@ def init_scaffolding(_path, **kwargs):
             subpath = '%s/%s' % (path, subdir)
             if not os.path.exists(subpath):
                 os.makedirs(subpath)
+        stylecss = path + "/css/style.css"
+        if not os.path.exists(stylecss):
+            with open(stylecss, 'w') as f:
+                f.write(style)
 
     def build_routes():
         """Creates directories + __init__ files for route logic"""
@@ -130,10 +135,21 @@ def init_scaffolding(_path, **kwargs):
             if not os.path.exists(base): 
                 with open(base, 'w') as f:
                     f.write(content)
+    
+    def build_app(appname):
+        from waltz.static import mainpy, homepy
+        appname += ".py" if appname[-3:] != ".py" else ""
+        homepypath = '%s/routes/home.py' % _path
+        mainpypath = '%s/%s' % (_path, appname)
+        for fname, content in [(mainpypath, mainpy), (homepypath, homepy)]:
+            if not os.path.exists(fname): 
+                with open(fname, 'w') as f:
+                    f.write(content)            
 
     build_static()
     build_routes()
     build_templates()
+    build_app(appname)
 
 def _preprocess(urls):
     """Can be used to inject routes in the future"""

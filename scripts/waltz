@@ -6,55 +6,6 @@ import os
 import sys
 from waltz import setup
 
-mainpy = """#!/usr/bin/python
-#-*- coding: utf-8 -*-
-
-\"\"\"
-    main.py
-    ~~~~~~~
-
-    Main waltz application.
-
-    :copyright: (c) __ by __.
-    :license: __ , see LICENSE for more details.
-\"\"\"
-
-import waltz
-
-urls = ('/analytics/?', 'waltz.modules.Analytics',
-        '/?', 'routes.home.Index')
-
-sessions = {}
-env = {}
-app = waltz.setup.dancefloor(urls, globals(), sessions=sessions, env=env)
-
-if __name__ == "__main__":
-    app.run()
-"""
-
-homepy = """#-*- coding: utf-8 -*-
-
-\"\"\"
-    routes.home
-    ~~~~~~~~~~~
-
-    Routes related to the homepage.
-
-    :copyright: (c) __ by __.
-    :license: __ , see LICENSE for more details.
-\"\"\"
-
-import waltz
-from waltz import track, render
-
-class Index:
-    @track
-    def GET(self):
-        return render().index()
-"""
-
-homepypath = "%s/routes/home.py" % os.getcwd()
-
 def argparser():
     parser = argparse.ArgumentParser(description="Waltz is a web.py framework " \
                                          "for designing web apps in 3/4 time")
@@ -64,13 +15,6 @@ def argparser():
                         help='Specify a name ')
     return parser
 
-
-def create_file(filepath, contents, overwrite=False):
-    """Create a file at filepath with contents"""
-    if overwrite or not os.path.isfile(filepath):
-        with open(filepath, 'w') as f:
-            f.write(contents)
-
 if __name__ == "__main__":
     parser = argparser()
     args = parser.parse_args()
@@ -78,15 +22,4 @@ if __name__ == "__main__":
     if not args.init:
         parser.print_help()
         sys.exit()
-
-    if args.init:
-        name = "main.py"
-        if args.name:      
-            name = args.name
-        if not ".py" in name:
-            name = name + ".py"
-        mainpypath ="%s/%s" % (os.getcwd(), name)
-
-    setup.init_scaffolding(os.getcwd())
-    create_file(mainpypath, mainpy, overwrite=False)
-    create_file(homepypath, homepy, overwrite=False)
+    setup.init_scaffolding(os.getcwd(), appname=args.name)
