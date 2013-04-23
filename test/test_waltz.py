@@ -1,5 +1,18 @@
+#-*- coding: utf-8 -*-
+
+"""
+    waltz.test
+    ~~~~~~~~~~
+
+    Test cases for the waltz web framework. Test cases follow webpy's
+    test documentation documented here:
+    http://webpy.org/cookbook/testing_with_paste_and_nose    
+"""
+
 import unittest
 import os
+import shutil
+from paste.fixture import TestApp
 import waltz
 from waltz import Account, User, web, storage
 
@@ -9,7 +22,16 @@ UHASH = 'fe9dfc91b3a89c563a15c1f9d7a1467c08fcb6621a14cfa791014f45bcfac0e3'
 SALT = 'mh3ot3si9anq'
 USER_FIELDS = {'age': 24}
 
-class TestWaltz(unittest.TestCase):           
+_tmpdir = '%s/tmp' % os.path.dirname(__file__)
+
+class TestWaltz(unittest.TestCase):
+    
+    def setUp(self):
+        self.assertTrue(not os.path.exists(_tmpdir))
+        os.makedirs(_tmpdir)        
+        waltz.setup.init_scaffolding(_tmpdir)
+        with open('%s/__init__.py' % _tmpdir, 'w') as f:
+            f.write("")
 
     def test_accounts(self):
         user = Account.register(USERNAME, PASSWD, salt=SALT, **USER_FIELDS)
@@ -26,6 +48,16 @@ class TestWaltz(unittest.TestCase):
                             "expected result  of " \
                             "%s but generated uhash: %s " \
                             % (USERNAME, PASSWD, SALT, UHASH, user.uhash))
+
+    def test_run(self):
+        middleware = []
+        #waltzapp = __import__() # XXX! '%s/main.py' % _tmpdir
+        #self.assertTrue(hasattr(waltzapp, 'env'), "Failed to load waltz app")
+        #print waltzapp.env
+        #app = TestApp(.wsgifunc(*middleware))
+        #r = testApp.get('/')
+        #assert_equal(r.status, 200)
+        #r.mustcontain('Hello, world!')
 
     def test_users(self):
         """Test whether waltz.User (of base type Account) interfaces
@@ -67,3 +99,10 @@ class TestWaltz(unittest.TestCase):
                             "Failed to delete user: %s" % USERNAME)
     def tearDown(self):
         if os.path.isfile('db'): os.remove('db')
+        self.assertTrue(os.path.exists(_tmpdir),
+                        "Can't find the tmp directory <Dir: %s>" \
+                            ", it should exist!" % _tmpdir)
+        shutil.rmtree(_tmpdir)
+        self.assertTrue(not os.path.exists(_tmpdir),
+                        "tmp directory <Dir: %s> should have been cleaned up" \
+                            "/ removed however it still exists!" % _tmpdir)
