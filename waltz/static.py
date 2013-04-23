@@ -7,7 +7,16 @@
 
 index = """$def with()
 
+$# Does this specific template (index.html) require its own css or js dependencies?
+$# Uncomment and or modify the following two lines by removing the # symbol
+
+$#css = /static/css/style.css
+$#js = /static/js/main.js
+
 <h1>Darling, we're ready to waltz!</h1>
+"""
+
+style= """
 """
 
 base = """$def with (content)
@@ -23,7 +32,15 @@ base = """$def with (content)
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="">
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="/static/css/style.css">
+    $# Dynamically link js files related to $content
+    $for src in content.get('js', "").split(" "):
+      $if src:
+        <script type="text/javascript" src="$src"></script>
+    $# Dynamically link css files related to $content
+    $for href in content.get('css', "").split(" "):
+      $if href:
+        <link rel="stylesheet" href="$href" />
   </head>
   <body>
     <!--[if lt IE 7]>                         
@@ -47,4 +64,51 @@ base = """$def with (content)
     </script>
   </body>
 </html>
+"""
+
+mainpy = """#!/usr/bin/python
+#-*- coding: utf-8 -*-
+
+\"\"\"
+    main.py
+    ~~~~~~~
+
+    Main waltz application.
+
+    :copyright: (c) __ by __.
+    :license: __ , see LICENSE for more details.
+\"\"\"
+
+import waltz
+
+urls = ('/analytics/?', 'waltz.modules.Analytics',
+        '/?', 'routes.home.Index')
+
+sessions = {}
+env = {}
+app = waltz.setup.dancefloor(urls, globals(), sessions=sessions, env=env)
+
+if __name__ == "__main__":
+    app.run()
+"""
+
+homepy = """#-*- coding: utf-8 -*-
+
+\"\"\"
+    routes.home
+    ~~~~~~~~~~~
+
+    Routes related to the homepage.
+
+    :copyright: (c) __ by __.
+    :license: __ , see LICENSE for more details.
+\"\"\"
+
+import waltz
+from waltz import track, render
+
+class Index:
+    @track
+    def GET(self):
+        return render().index()
 """

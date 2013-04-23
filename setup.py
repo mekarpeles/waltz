@@ -15,7 +15,7 @@ import os
 
 setup(
     name='waltz',
-    version='0.1.68',
+    version='0.1.69',
     url='http://github.com/mekarpeles/waltz',
     author='mek',
     author_email='michael.karpeles@gmail.com',
@@ -28,6 +28,7 @@ setup(
         'lazydb >= 0.1.62',
         'web.py >= 0.36',
         'lepl >= 5.1.3',
+        'paste >= 1.7.5.1',
     ],
     scripts=[
         "scripts/waltz"
