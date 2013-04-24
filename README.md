@@ -9,14 +9,16 @@ tracking. Waltz and never miss a beat.
 
 ## Installation
 
-You may wish to install with the --upgrade flag since updates pushed are frequently.
-
     # Installing the latest stable build from pypi
     $ pip install waltz
-    
+
+You may wish to pip install using the --upgrade flag since updates are pushed frequently.
+
     # Upgrading your waltz package using pypi
     $ pip install waltz --upgrade
     
+To build from source:
+
     # Build latest from github
     $ git clone http://github.com/mekarpeles/waltz
     $ cd waltz
