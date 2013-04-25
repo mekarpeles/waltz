@@ -19,7 +19,6 @@ if __name__ == "__main__":
     parser = argparser()
     args = parser.parse_args()
 
-    if not args.init:
-        parser.print_help()
-        sys.exit()
+    if not args.init:        
+        sys.exit(parser.print_help())
     setup.init_scaffolding(os.getcwd(), appname=args.name)
