@@ -15,6 +15,7 @@ import random
 import time
 from copy import copy
 from lazydb import Db
+import json
 
 def track(fn):
     """A decorator which wraps each route with analytics tracking."""
@@ -76,5 +77,13 @@ def exponential_backoff(exception, err=None, tries=5, debug=False):
             raise exception('[Exponential Backoff] ' \
                                 'Timed out after %s attempts. ' \
                                 '%s (details: %s)' % (tries, e, err))
+        return inner
+    return decorator
+
+def API(web):
+    def decorator(f):
+        def inner(*args, **kwargs):
+            web.header('Content-Type', 'application/json')
+            return json.dumps(f(*args, **kwargs))
         return inner
     return decorator
