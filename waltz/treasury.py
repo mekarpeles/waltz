@@ -346,9 +346,9 @@ class Cart(object):
         """
         pid = long(pid)
         key = -1
-        if pid == None and slug == None:
+        if pid is None and slug is None:
             raise ValueError("please supply an pid or slug")
-        if pid == None:
+        if pid is None:
             # slug search O(n)
             for k,v in self.itemsdict.items():
                 if v.product.name == slug:
