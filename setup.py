@@ -15,7 +15,7 @@ import os
 
 setup(
     name='waltz',
-    version='0.1.69',
+    version='0.1.692',
     url='http://github.com/mekarpeles/waltz',
     author='mek',
     author_email='michael.karpeles@gmail.com',

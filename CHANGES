@@ -1,3 +1,6 @@
+v.0.1.692 Wed 15 May 2013 -- Spotlight
+- Replaced == comparison to None in treasury to 'is'
+
 v.0.1.69 Mon 22 April 2013 -- Spotlight
 - Moved all static content to static.py, rm'd them from scripts
 - Added test cases for setUp (testing waltz init)
