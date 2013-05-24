@@ -69,9 +69,14 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
         env['session'] = session
 
     def setup_waltz():
-        web.config.debug = debug        
+        def fcgi(func, addr=None):
+            """nginx with spawn-fcgi"""
+            return web.wsgi.runfcgi(func, addr)
+        web.config.debug = debug
         if debug:
             PeriodicReloader()
+        if kwargs.get('fcgi'):
+            web.wsgi.runwsgi = fcgi
         db = kwargs.get('db', "%s/db" % _path)
         def waltz_hook():
             web.ctx.waltz = {"debug": debug, "db": db}
@@ -141,7 +146,8 @@ def init_scaffolding(_path, appname="main.py", **kwargs):
         appname += ".py" if appname[-3:] != ".py" else ""
         homepypath = '%s/routes/home.py' % _path
         mainpypath = '%s/%s' % (_path, appname)
-        for fname, content in [(mainpypath, mainpy), (homepypath, homepy)]:
+        for fname, content in [(mainpypath, mainpy),
+                               (homepypath, homepy)]:
             if not os.path.exists(fname): 
                 with open(fname, 'w') as f:
                     f.write(content)            
@@ -154,3 +160,4 @@ def init_scaffolding(_path, appname="main.py", **kwargs):
 def _preprocess(urls):
     """Can be used to inject routes in the future"""
     return urls
+
