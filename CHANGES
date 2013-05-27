@@ -1,3 +1,8 @@
+v.0.1.696 Mon 27 May 2013 -- Spotlight
+- Modified User.get to require a uid + never return getall
+- Fixed User get and getall
+- checking for key existence before deleting keys in User._publishable
+
 v.0.1.692 Wed 15 May 2013 -- Spotlight
 - Replaced == comparison to None in treasury to 'is'
 

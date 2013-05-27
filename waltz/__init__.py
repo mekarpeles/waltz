@@ -2,7 +2,7 @@
 
 """waltz: make web apps in 3/4 time (http://github.com/mekarpeles/waltz)"""
 
-__version__ = "0.1.694"
+__version__ = "0.1.696"
 __author__ = [
     "Mek <michael.karpeles@gmail.com>"
 ]
@@ -32,13 +32,16 @@ from utils import Storage
 class User(Storage, Account):
     """Extends Account to use LazyDB as Datastore"""
 
-    def __init__(self, uid):
+    udb = 'users'
+
+    def __init__(self, uid, user=None):
         """
         TODO:
         * Provide ability to self.save()
         * Extend __init__ to populate User obj as Storage
         """
-        for k, v in self.get(uid).items():
+        u = user if user else self.get(uid)
+        for k, v in u.items():
             setattr(self, k, v)
 
     def __repr__(self):     
@@ -54,14 +57,14 @@ class User(Storage, Account):
 
     @classmethod
     def getall(cls, db=db, safe=False):
-        users = db().get('users', default={})
-        if safe:
-            for user in users:
-                users[user] = cls._publishable(users[user])
+        users = db().get(cls.udb, default={}, touch=True)
+        for uid, user in users.items():
+            user = user if safe else cls._publishable(user)
+            users[uid] = cls(uid, user=user)
         return users
 
     @classmethod
-    def get(cls, uid=None, safe=False, db=db):
+    def get(cls, uid, safe=False, db=db):
         """
         params:
             uid - the user id which to fetch
@@ -71,16 +74,16 @@ class User(Storage, Account):
         def _db():
             return db if type(db) is Db else db()
             
-        if type(uid) is int:
+        if uid is not None:
             users = cls.getall(db=db)
-            try:
-                user = users[uid]
-                if safe:
-                    user = cls._publishable(user)
-                return user
-            except:
-                return None
-        return cls.getall(db=db, safe=safe)
+            #try:
+            user = cls(uid, user=users[uid])
+            if safe:
+                user = cls(uid, user=cls._publishable(user))
+            return user
+            #except:
+            #    return None
+        raise IndexError("No user found with id: %s" % uid)
 
     @classmethod
     def _publishable(cls, usr, *args):
@@ -90,7 +93,8 @@ class User(Storage, Account):
         scrub/remove"""
         keys = set(args + ('uhash', 'salt'))
         for key in keys:
-            del usr[key]
+            if key in usr:
+                del usr[key]
         return usr
 
     @classmethod
@@ -101,17 +105,17 @@ class User(Storage, Account):
         params:
             usr - dictionary or Storage
         """
-        users = db().get('users', default={})
+        users = db().get(cls.udb, default={}, touch=True)
         uid = usr[pkey]
         users[uid] = usr
-        users = db().put('users', users)
+        users = db().put(cls.udb, users)
         return uid
 
     @classmethod
     def replace(cls, uid, usr):
-        users = db().get('users', {})
+        users = db().get(cls.udb, {}, touch=True)
         users[uid] = usr
-        db().put('users', users)
+        db().put(cls.udb, users)
         return usr
 
     @classmethod
@@ -119,7 +123,7 @@ class User(Storage, Account):
         """Updates a given user by applying a func to it. Defaults to
         identity function
         """
-        users = db().get('users', {})
+        users = db().get(cls.udb, default={}, touch=True)
         user = func(users[uid])
         users[uid] = user
         db().put('users', users)
@@ -127,10 +131,10 @@ class User(Storage, Account):
 
     @classmethod
     def delete(cls, uid):
-        users = db().get('users', {})
+        users = db().get(cls.udb, default={}, touch=True)
         try:
             del users[uid]
-            return db().put('users', users)
+            return db().put(cls.udb, users)
         except KeyError:
             return False
 
@@ -146,7 +150,7 @@ class User(Storage, Account):
             return cls.authenticate(u['username'], passwd, # user provided
                                     u['salt'], u['uhash']) # db provided
         raise TypeError("Account._auth expects user object 'u' with " \
-                            "keys: ['salt', 'uhash', 'username']. " \
+                            "keys: ['ssalt', 'uhash', 'username']. " \
                             "One or more items missing from user dict u.")
 
     @classmethod
