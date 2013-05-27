@@ -76,13 +76,13 @@ class User(Storage, Account):
             
         if uid is not None:
             users = cls.getall(db=db)
-            #try:
-            user = cls(uid, user=users[uid])
-            if safe:
-                user = cls(uid, user=cls._publishable(user))
-            return user
-            #except:
-            #    return None
+            try:
+                user = cls(uid, user=users[uid])
+                if safe:
+                    user = cls(uid, user=cls._publishable(user))
+                return user
+            except:
+                return None
         raise IndexError("No user found with id: %s" % uid)
 
     @classmethod
