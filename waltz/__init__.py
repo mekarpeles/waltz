@@ -2,7 +2,7 @@
 
 """waltz: make web apps in 3/4 time (http://github.com/mekarpeles/waltz)"""
 
-__version__ = "0.1.692"
+__version__ = "0.1.694"
 __author__ = [
     "Mek <michael.karpeles@gmail.com>"
 ]
@@ -71,7 +71,7 @@ class User(Storage, Account):
         def _db():
             return db if type(db) is Db else db()
             
-        if uid:
+        if type(uid) is int:
             users = cls.getall(db=db)
             try:
                 user = users[uid]
