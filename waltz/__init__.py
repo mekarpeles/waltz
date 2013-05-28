@@ -2,7 +2,7 @@
 
 """waltz: make web apps in 3/4 time (http://github.com/mekarpeles/waltz)"""
 
-__version__ = "0.1.694"
+__version__ = "0.1.698"
 __author__ = [
     "Mek <michael.karpeles@gmail.com>"
 ]
@@ -32,36 +32,43 @@ from utils import Storage
 class User(Storage, Account):
     """Extends Account to use LazyDB as Datastore"""
 
-    def __init__(self, uid):
+    udb = 'users'
+
+    def __init__(self, uid, user=None):
         """
         TODO:
         * Provide ability to self.save()
         * Extend __init__ to populate User obj as Storage
         """
-        for k, v in self.get(uid).items():
+        u = user if user else self.get(uid)
+        if u is None:
+            raise AttributeError("No user found with id: %s" % uid)
+        for k, v in u.items():
             setattr(self, k, v)
+
 
     def __repr__(self):     
         #return '<User ' + dict.__repr__(self) + '>'
         return '<User ' + repr(self._publishable(dict(self))) + '>'
 
-    def save(self):
+    def save(self, db=db):
         """save the state of the current user in the db; replace
         existing databased user (if it exists) with this instance of
         the User or insert this User otherwise
         """
-        pass
+        users = User.getall()
+        users[self.username] = dict(self)
+        return db().put(self.udb, users)
 
     @classmethod
     def getall(cls, db=db, safe=False):
-        users = db().get('users', default={})
-        if safe:
-            for user in users:
-                users[user] = cls._publishable(users[user])
+        users = db().get(cls.udb, default={}, touch=True)
+        for uid, user in users.items():           
+            users[uid] = cls(uid, user=(user if not safe else cls._publishable(user)))
         return users
 
     @classmethod
-    def get(cls, uid=None, safe=False, db=db):
+    def get(cls, uid, safe=False, db=db):
         """
         params:
             uid - the user id which to fetch
@@ -71,16 +78,13 @@ class User(Storage, Account):
         def _db():
             return db if type(db) is Db else db()
             
-        if type(uid) is int:
+        if uid is not None:
             users = cls.getall(db=db)
             try:
-                user = users[uid]
-                if safe:
-                    user = cls._publishable(user)
-                return user
-            except:
+                return users[uid] if not safe else cls._publishable(users[uid])
+            except KeyError:
                 return None
-        return cls.getall(db=db, safe=safe)
+
 
     @classmethod
     def _publishable(cls, usr, *args):
@@ -90,7 +94,8 @@ class User(Storage, Account):
         scrub/remove"""
         keys = set(args + ('uhash', 'salt'))
         for key in keys:
-            del usr[key]
+            if key in usr:
+                del usr[key]
         return usr
 
     @classmethod
@@ -101,17 +106,17 @@ class User(Storage, Account):
         params:
             usr - dictionary or Storage
         """
-        users = db().get('users', default={})
+        users = db().get(cls.udb, default={}, touch=True)
         uid = usr[pkey]
         users[uid] = usr
-        users = db().put('users', users)
+        users = db().put(cls.udb, users)
         return uid
 
     @classmethod
     def replace(cls, uid, usr):
-        users = db().get('users', {})
+        users = db().get(cls.udb, {}, touch=True)
         users[uid] = usr
-        db().put('users', users)
+        db().put(cls.udb, users)
         return usr
 
     @classmethod
@@ -119,7 +124,7 @@ class User(Storage, Account):
         """Updates a given user by applying a func to it. Defaults to
         identity function
         """
-        users = db().get('users', {})
+        users = db().get(cls.udb, default={}, touch=True)
         user = func(users[uid])
         users[uid] = user
         db().put('users', users)
@@ -127,10 +132,10 @@ class User(Storage, Account):
 
     @classmethod
     def delete(cls, uid):
-        users = db().get('users', {})
+        users = db().get(cls.udb, default={}, touch=True)
         try:
             del users[uid]
-            return db().put('users', users)
+            return db().put(cls.udb, users)
         except KeyError:
             return False
 
@@ -166,21 +171,19 @@ class User(Storage, Account):
         >>> User.register("username", "password", passwd2="password",
         ...               email="username@domain.org", salt='123456789',
         ...               pkey="email")
-        <Storage {'username': 'username', 'uhash': '021d98a32375ed850f459fe484c3ab2e352fc2801ef13eae274103befc9d0274', 'salt': '123456789', 'email': 'username@domain.org'}>
+        <Storage {'username': 'username',
+        'uhash': '021d98a32375ed850f459fe484c3ab2e352fc2801ef13eae274103befc9d0274', 
+        'salt': '123456789', 'email': 'username@domain.org'}>
         """
-        def check_registered(username):
-            if any(map(lambda usr: usr['username'] == username,
-                       cls.get().values())):
-                raise Exception("Username already registered")
-        
+        #if not cls.registered(username):
         user = super(User, cls).register(username, passwd, passwd2=passwd2,
                                          email=email, salt=salt, **kwargs)
         user.enabled = enabled
         uid = cls.insert(user, pkey=pkey)
-        return user
+        return cls(user.username, user=user)
 
     @classmethod
-    def registered(username):
+    def registered(cls, username):
         """predicate which answers whether a username exists in the User db.
 
         XXX registered() should be made more flexible to accomodate
@@ -196,4 +199,6 @@ class User(Storage, Account):
         >>> User.registered("Guido van Rossum")
         False
         """
-        pass
+        if any(usr['username'] == username for usr in cls.getall().values()):
+            return True
+        return False
