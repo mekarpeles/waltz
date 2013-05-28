@@ -20,6 +20,7 @@ USERNAME = "username"
 PASSWD = "password"
 UHASH = 'fe9dfc91b3a89c563a15c1f9d7a1467c08fcb6621a14cfa791014f45bcfac0e3'
 SALT = 'mh3ot3si9anq'
+EMAIL = "waltz@example.org"
 USER_FIELDS = {'age': 24}
 
 _tmpdir = '%s/tmp' % os.path.dirname(__file__)
@@ -68,12 +69,17 @@ class TestWaltz(unittest.TestCase):
         web.ctx.waltz.db = 'db'
 
         u1 = User.register(USERNAME, PASSWD, **USER_FIELDS)
+        u1.email = EMAIL
+        u1.save()
         u2 = User.get(USERNAME)
         u3 = User.register(USERNAME[::-1], PASSWD, **USER_FIELDS)
 
         self.assertTrue(u1['username'] == USERNAME,
                         "<waltz.User.register> Registration " \
                             "returned invalid user dict")
+        print User.get(USERNAME)
+        self.assertTrue(User.get(USERNAME).email == EMAIL,
+                        "Failed to save / update User record")
         self.assertTrue(u2 is not None, "<waltz.User.register> " \
                             "Registration failed, no such entry " \
                             "indexed by {'username': '%s'}" % USERNAME)

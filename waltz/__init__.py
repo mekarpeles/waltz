@@ -2,7 +2,7 @@
 
 """waltz: make web apps in 3/4 time (http://github.com/mekarpeles/waltz)"""
 
-__version__ = "0.1.696"
+__version__ = "0.1.698"
 __author__ = [
     "Mek <michael.karpeles@gmail.com>"
 ]
@@ -41,26 +41,30 @@ class User(Storage, Account):
         * Extend __init__ to populate User obj as Storage
         """
         u = user if user else self.get(uid)
+        if u is None:
+            raise AttributeError("No user found with id: %s" % uid)
         for k, v in u.items():
             setattr(self, k, v)
+
 
     def __repr__(self):     
         #return '<User ' + dict.__repr__(self) + '>'
         return '<User ' + repr(self._publishable(dict(self))) + '>'
 
-    def save(self):
+    def save(self, db=db):
         """save the state of the current user in the db; replace
         existing databased user (if it exists) with this instance of
         the User or insert this User otherwise
         """
-        pass
+        users = User.getall()
+        users[self.username] = dict(self)
+        return db().put(self.udb, users)
 
     @classmethod
     def getall(cls, db=db, safe=False):
         users = db().get(cls.udb, default={}, touch=True)
-        for uid, user in users.items():
-            user = user if safe else cls._publishable(user)
-            users[uid] = cls(uid, user=user)
+        for uid, user in users.items():           
+            users[uid] = cls(uid, user=(user if not safe else cls._publishable(user)))
         return users
 
     @classmethod
@@ -77,13 +81,10 @@ class User(Storage, Account):
         if uid is not None:
             users = cls.getall(db=db)
             try:
-                user = cls(uid, user=users[uid])
-                if safe:
-                    user = cls(uid, user=cls._publishable(user))
-                return user
-            except:
+                return users[uid] if not safe else cls._publishable(users[uid])
+            except KeyError:
                 return None
-        raise IndexError("No user found with id: %s" % uid)
+
 
     @classmethod
     def _publishable(cls, usr, *args):
@@ -150,7 +151,7 @@ class User(Storage, Account):
             return cls.authenticate(u['username'], passwd, # user provided
                                     u['salt'], u['uhash']) # db provided
         raise TypeError("Account._auth expects user object 'u' with " \
-                            "keys: ['ssalt', 'uhash', 'username']. " \
+                            "keys: ['salt', 'uhash', 'username']. " \
                             "One or more items missing from user dict u.")
 
     @classmethod
@@ -170,21 +171,19 @@ class User(Storage, Account):
         >>> User.register("username", "password", passwd2="password",
         ...               email="username@domain.org", salt='123456789',
         ...               pkey="email")
-        <Storage {'username': 'username', 'uhash': '021d98a32375ed850f459fe484c3ab2e352fc2801ef13eae274103befc9d0274', 'salt': '123456789', 'email': 'username@domain.org'}>
+        <Storage {'username': 'username',
+        'uhash': '021d98a32375ed850f459fe484c3ab2e352fc2801ef13eae274103befc9d0274', 
+        'salt': '123456789', 'email': 'username@domain.org'}>
         """
-        def check_registered(username):
-            if any(map(lambda usr: usr['username'] == username,
-                       cls.get().values())):
-                raise Exception("Username already registered")
-        
+        #if not cls.registered(username):
         user = super(User, cls).register(username, passwd, passwd2=passwd2,
                                          email=email, salt=salt, **kwargs)
         user.enabled = enabled
         uid = cls.insert(user, pkey=pkey)
-        return user
+        return cls(user.username, user=user)
 
     @classmethod
-    def registered(username):
+    def registered(cls, username):
         """predicate which answers whether a username exists in the User db.
 
         XXX registered() should be made more flexible to accomodate
@@ -200,4 +199,6 @@ class User(Storage, Account):
         >>> User.registered("Guido van Rossum")
         False
         """
-        pass
+        if any(usr['username'] == username for usr in cls.getall().values()):
+            return True
+        return False
