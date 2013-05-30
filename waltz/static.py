@@ -66,7 +66,7 @@ base = """$def with (content)
 </html>
 """
 
-mainpy = """#!/usr/bin/python
+mainpy = """#!/usr/bin/env python
 #-*- coding: utf-8 -*-
 
 \"\"\"
