@@ -9,13 +9,13 @@
     :license pending
 """
 
-from waltz import web
 import os
 import random
 import time
+import json
 from copy import copy
 from lazydb import Db
-import json
+from waltz import web, session, log
 
 def track(fn):
     """A decorator which wraps each route with analytics tracking."""
@@ -35,7 +35,8 @@ def track(fn):
             del ctx['wsgi.input']
             try:
                 Db(web.ctx['waltz']['db']).append('analytics', ctx)
-            except:
+            except cPickle.UnpicklingError as e:
+                log("Analytics tracking error", lbl="error")
                 raise Exception("Database Connection Error: "\
                                     "web.ctx incorrecly configured.")
             return fn(*args, **kwargs)        
@@ -77,6 +78,24 @@ def exponential_backoff(exception, err=None, tries=5, debug=False):
             raise exception('[Exponential Backoff] ' \
                                 'Timed out after %s attempts. ' \
                                 '%s (details: %s)' % (tries, e, err))
+        return inner
+    return decorator
+
+def require_loggedin(web, redir, key='logged', value=True):
+    """Func wrapper which returns a decorator for redirecting user to
+    appropriate login page if their session[key] != value
+    """
+    def decorator(f):
+        def inner(*args, **kwargs):
+            logged = False
+            if value in [None, True, False]:
+                if session()[key] is value:
+                    logged = True
+            if session()[key] != value:
+                if session()[key] == value:
+                    logged = True
+            if logged:
+                raise web.seeother(redir)
         return inner
     return decorator
 
