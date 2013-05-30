@@ -2,7 +2,7 @@
 
 """waltz: make web apps in 3/4 time (http://github.com/mekarpeles/waltz)"""
 
-__version__ = "0.1.698"
+__version__ = "0.1.699"
 __author__ = [
     "Mek <michael.karpeles@gmail.com>"
 ]

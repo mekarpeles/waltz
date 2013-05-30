@@ -1,3 +1,8 @@
+v.0.1.699 Wed 29 May 2013 -- Spotlight
+- Added logging to __init__.py and setup.py
+- log filename (logging="error.log" default) is kwarg for waltz.setup.dancefloor
+- User.change_db() can set custom dbname -> User now  seperatable from waltz app
+
 v.0.1.698 Mon 27 May 2013 -- Spotlight
 - Added User.save functionality
 - User.register now return User obj instead of Storage dict
