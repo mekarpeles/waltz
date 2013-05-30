@@ -39,7 +39,7 @@ class User(Storage, Account):
     """Extends Account to use LazyDB as Datastore"""
 
     udb = 'users'
-    db = db
+    db = staticmethod(db)
 
     def __init__(self, uid, user=None):
         """
