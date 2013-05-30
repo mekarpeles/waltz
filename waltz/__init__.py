@@ -9,8 +9,13 @@ __author__ = [
 __license__ = "public domain"
 __contributors__ = "see AUTHORS"
 
+import logging
 import web
 from lazydb import Db
+
+def logger(logpath, msg, level=logging.INFO, method='info'):
+    logging.basicConfig(filename=logpath, level=level)
+    getattr(logging, method, 'info')(msg)
 
 session = lambda: getattr(web.ctx, 'session', None)
 # render: renders a template through base template base.html
@@ -20,6 +25,7 @@ render = lambda: getattr(web.ctx, 'render', None)
 slender = lambda: getattr(web.ctx, 'slender', None)
 # db for waltz analytics, etc.
 db = lambda: Db(web.ctx['waltz']['db'])
+log = lambda msg, lbl='info': logger(web.ctx['waltz']['logging'], msg, method=lbl)
 
 from security import Account
 from decorations import *
@@ -33,6 +39,7 @@ class User(Storage, Account):
     """Extends Account to use LazyDB as Datastore"""
 
     udb = 'users'
+    db = db
 
     def __init__(self, uid, user=None):
         """
@@ -48,43 +55,39 @@ class User(Storage, Account):
 
 
     def __repr__(self):     
-        #return '<User ' + dict.__repr__(self) + '>'
         return '<User ' + repr(self._publishable(dict(self))) + '>'
 
-    def save(self, db=db):
+    def save(self):
         """save the state of the current user in the db; replace
         existing databased user (if it exists) with this instance of
         the User or insert this User otherwise
         """
         users = User.getall()
         users[self.username] = dict(self)
-        return db().put(self.udb, users)
+        return self.db().put(self.udb, users)
 
     @classmethod
-    def getall(cls, db=db, safe=False):
-        users = db().get(cls.udb, default={}, touch=True)
+    def getall(cls, safe=False):
+        users = cls.db().get(cls.udb, default={}, touch=True)
         for uid, user in users.items():           
-            users[uid] = cls(uid, user=(user if not safe else cls._publishable(user)))
+            u = (user if not safe else cls._publishable(user))
+            users[uid] = cls(uid, user=u)
         return users
 
     @classmethod
-    def get(cls, uid, safe=False, db=db):
+    def get(cls, uid, safe=False):
         """
         params:
             uid - the user id which to fetch
             safe - return users without secure fields like salt and hash
             db - provide your own instantiated lazydb.Db() connector
         """
-        def _db():
-            return db if type(db) is Db else db()
-            
         if uid is not None:
-            users = cls.getall(db=db)
+            users = cls.getall()
             try:
                 return users[uid] if not safe else cls._publishable(users[uid])
             except KeyError:
                 return None
-
 
     @classmethod
     def _publishable(cls, usr, *args):
@@ -106,17 +109,17 @@ class User(Storage, Account):
         params:
             usr - dictionary or Storage
         """
-        users = db().get(cls.udb, default={}, touch=True)
+        users = cls.db().get(cls.udb, default={}, touch=True)
         uid = usr[pkey]
         users[uid] = usr
-        users = db().put(cls.udb, users)
+        users = cls.db().put(cls.udb, users)
         return uid
 
     @classmethod
     def replace(cls, uid, usr):
-        users = db().get(cls.udb, {}, touch=True)
+        users = cls.db().get(cls.udb, {}, touch=True)
         users[uid] = usr
-        db().put(cls.udb, users)
+        cls.db().put(cls.udb, users)
         return usr
 
     @classmethod
@@ -124,20 +127,30 @@ class User(Storage, Account):
         """Updates a given user by applying a func to it. Defaults to
         identity function
         """
-        users = db().get(cls.udb, default={}, touch=True)
+        users = cls.db().get(cls.udb, default={}, touch=True)
         user = func(users[uid])
         users[uid] = user
-        db().put('users', users)
+        cls.db().put('users', users)
         return user
 
     @classmethod
     def delete(cls, uid):
-        users = db().get(cls.udb, default={}, touch=True)
+        users = cls.db().get(cls.udb, default={}, touch=True)
         try:
             del users[uid]
-            return db().put(cls.udb, users)
+            return cls.db().put(cls.udb, users)
         except KeyError:
             return False
+
+    def authenticate(self, passwd):
+        """Instance level authentication for a User
+
+        usage:
+        >>> u = User('username')
+        >>> u.authenticate('password')
+        True
+        """
+        return self.easyauth(dict(self), passwd)
 
     @classmethod
     def easyauth(cls, u, passwd):
@@ -148,8 +161,8 @@ class User(Storage, Account):
                 ['salt', 'uhash', 'username']
         """
         if u and all(key in u for key in ['username', 'salt', 'uhash']):
-            return cls.authenticate(u['username'], passwd, # user provided
-                                    u['salt'], u['uhash']) # db provided
+            return super(Account, cls).authenticate(u['username'], passwd,
+                                                    u['salt'], u['uhash'])
         raise TypeError("Account._auth expects user object 'u' with " \
                             "keys: ['salt', 'uhash', 'username']. " \
                             "One or more items missing from user dict u.")
@@ -186,7 +199,7 @@ class User(Storage, Account):
     def registered(cls, username):
         """predicate which answers whether a username exists in the User db.
 
-        XXX registered() should be made more flexible to accomodate
+        XXX registered() should be made more flexible to accomomdate
         for keys other than username in the case where there are
         UNIQUEness constraints on user attributes, such as email. This
         may mean providing **kwargs of unique User attributes and
@@ -202,3 +215,8 @@ class User(Storage, Account):
         if any(usr['username'] == username for usr in cls.getall().values()):
             return True
         return False
+
+    @classmethod
+    def change_db(cls, dbname):
+        """Internally sets the name of the database to use"""
+        setattr(cls, 'db', staticmethod(lambda: Db(dbname)))

@@ -8,9 +8,9 @@
 """
 
 import os
+from functools import partial
 import web
 from web import wsgiserver
-from functools import partial
 from reloader import PeriodicReloader
 _https = wsgiserver.CherryPyWSGIServer
 
@@ -78,8 +78,12 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
         if kwargs.get('fcgi'):
             web.wsgi.runwsgi = fcgi
         db = kwargs.get('db', "%s/db" % _path)
+        lgr = kwargs.get('logging', '%s/events.log' % _path)
         def waltz_hook():
-            web.ctx.waltz = {"debug": debug, "db": db}
+            web.ctx.waltz = {"debug": debug,
+                             "db": db,
+                             "logging": lgr
+                             }
         app.add_processor(web.loadhook(waltz_hook))        
 
     setup_rendering()
