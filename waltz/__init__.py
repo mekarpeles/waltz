@@ -2,7 +2,7 @@
 
 """waltz: make web apps in 3/4 time (http://github.com/mekarpeles/waltz)"""
 
-__version__ = "0.1.699"
+__version__ = "0.1.7"
 __author__ = [
     "Mek <michael.karpeles@gmail.com>"
 ]
@@ -35,7 +35,7 @@ from setup import *
 from modules import rss
 from utils import Storage
 
-class User(Storage, Account):
+class User(Account, Storage):
     """Extends Account to use LazyDB as Datastore"""
 
     udb = 'users'
@@ -161,8 +161,8 @@ class User(Storage, Account):
                 ['salt', 'uhash', 'username']
         """
         if u and all(key in u for key in ['username', 'salt', 'uhash']):
-            return super(Account, cls).authenticate(u['username'], passwd,
-                                                    u['salt'], u['uhash'])
+            return Account.authenticate(u['username'], passwd,
+                                        u['salt'], u['uhash'])
         raise TypeError("Account._auth expects user object 'u' with " \
                             "keys: ['salt', 'uhash', 'username']. " \
                             "One or more items missing from user dict u.")

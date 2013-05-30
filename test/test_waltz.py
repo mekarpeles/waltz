@@ -80,6 +80,7 @@ class TestWaltz(unittest.TestCase):
         print User.get(USERNAME)
         self.assertTrue(User.get(USERNAME).email == EMAIL,
                         "Failed to save / update User record")
+        self.assertTrue(u1.authenticate(PASSWD), "User.authenticate Failed")
         self.assertTrue(u2 is not None, "<waltz.User.register> " \
                             "Registration failed, no such entry " \
                             "indexed by {'username': '%s'}" % USERNAME)
