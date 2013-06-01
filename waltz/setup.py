@@ -5,6 +5,9 @@
     ~~~~~~~~~~~~~~
     Setup webpy app with additional waltz;
     Sessions and authentication, templates, etc.
+
+    :copyright: (c) 2012 by Mek
+    :license: BSD, see LICENSE for more details.
 """
 
 import os
@@ -126,7 +129,7 @@ def init_scaffolding(_path, appname="main.py", **kwargs):
 
     def build_routes():
         """Creates directories + __init__ files for route logic"""
-        for d in ['routes', 'subapps']:
+        for d in ['routes', 'subapps', 'test']:
             path = '%s/%s' % (_path, d)
             if not os.path.exists(path):
                 os.makedirs(path)
