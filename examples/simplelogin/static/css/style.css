@@ -1,1 +1,17 @@
+body {
+    margin: 0px;
+}
 
+header {
+    padding: 10px 20px;
+    background-color: #eee;
+    border-bottom: 1px solid #ddd;
+}
+
+h1 {
+    font-size: 16px;
+    margin: 0px;
+    padding: 0px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+}

@@ -12,6 +12,7 @@ $def with (content)
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="">
     <link rel="stylesheet" href="/static/css/style.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
     $# Dynamically link js files related to $content
     $for src in content.get('js', "").split(" "):
       $if src:
@@ -29,6 +30,7 @@ $def with (content)
         <![endif]-->
 
     <header>
+      <h1>Waltz Authentication Example</h1>      
     </header>
 
     <div id="content">
