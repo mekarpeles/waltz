@@ -50,4 +50,6 @@ class Index:
 
         See: http://webpy.org/docs/0.3/templetor
         """
-        return waltz.render().index()
+        if waltz.session()['logged']:
+            return waltz.render().index()
+        raise waltz.web.seeother('/login')

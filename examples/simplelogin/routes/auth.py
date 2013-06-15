@@ -10,18 +10,15 @@
     :license: GPLv3, see LICENSE for more details.
 """
 
-from waltz import User, web, session
+from waltz import User, web, session, render
 
 class Register:
-    def GET(self):
-        raise NotImplementedError("TODO")
-
     def POST(self):
         raise NotImplementedError("TODO")
 
 class Login:
     def GET(self):
-        raise NotImplementedError("TODO")
+        return render().login()
 
     def POST(self):        
         raise NotImplementedError("TODO")
