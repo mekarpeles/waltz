@@ -10,18 +10,45 @@
     :license: GPLv3, see LICENSE for more details.
 """
 
+import waltz
 from waltz import User, web, session, render
 
-class Register:
-    def POST(self):
-        raise NotImplementedError("TODO")
-
 class Login:
-    def GET(self):
-        return render().login()
+    def GET(self, msg=""):
+        if session()['logged']:
+            msg = "Already logged in"
+        return render().login(msg=msg)
 
     def POST(self):        
-        raise NotImplementedError("TODO")
+        i = web.input(email="", password="")
+        if not waltz.utils.valid_email(i.email):
+            return self.GET(msg="invalid email")
+        try:
+            u = User(i.email)
+        except AttributeError:
+            return self.GET(msg="no such user")
+        if u.authenticate(i.password):
+            session().update({'logged': True,
+                              'email': i.email})
+            raise web.seeother('/')
+        return self.GET(msg="invalid credentials")
+
+class Register:
+    def GET(self, msg=""):
+        return render().login(msg=msg)
+
+    def POST(self):
+        i = web.input(email="", password="", password_confirm="")
+        if not waltz.utils.valid_email(i.email):
+            return self.GET(msg="invalid email")
+        try:
+            u = User(i.email)
+        except:
+            u = User.register(i.email, i.password, passwd2=i.password_confirm)
+            session().update({'logged': True,
+                              'email': i.email})
+            raise web.seeother('/')
+        return Login().GET(msg="User already exists")
 
 class Logout:
     def GET(self):

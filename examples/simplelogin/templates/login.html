@@ -1,25 +1,30 @@
+$def with (msg="")
 
 <div id="auth">
-  <div class="sec-login">
-    <form method="POST" action="/login">
-      <h2>Login</h2>
-      <div><input type="email" placeholder="email" name="email" /></div>
-      <div><input type="password" name="password" placeholder="password" /></div>
-      <div><input type="submit" /></div>
-    </form>
-  </div>
+  $if not session['logged']:
+    <div class="sec-login">
+      <form method="POST" action="/login">
+	<h2>Login</h2>
+	<div><input type="email" placeholder="email" name="email" /></div>
+	<div><input type="password" name="password" placeholder="password" /></div>
+	<div><input type="submit" /></div>
+      </form>
+    </div>
+    
+    <div class="sec-register">
+      <form method="POST" action="/register">
+	<h2>Register</h2>
+	<div><input type="email" placeholder="email" name="email" /></div>
+	<div><input type="password" name="password" placeholder="password" /></div>
+	<div><input type="password" name="password_confirm"
+		    placeholder="confirm password"/></div>
+	<div><input type="submit" /></div>
+      </form>
+    </div>
 
-  <div class="sec-register">
-    <form method="POST" action="/register">
-      <h2>Register</h2>
-      <div><input type="email" placeholder="email" name="email" /></div>
-      <div><input type="password" name="password" placeholder="password" /></div>
-      <div><input type="password" name="password_confirm"
-		  placeholder="confirm password"/></div>
-      <div><input type="submit" /></div>
-    </form>
-  </div>
+    <div class="clearfix"></div>
 
-  <div class="clearfix"></div>
+  $if msg:
+    <p class="msg">$msg</p>
 
 </div>
