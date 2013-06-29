@@ -10,8 +10,8 @@ index = """$def with()
 $# Does this specific template (index.html) require its own css or js dependencies?
 $# Uncomment and or modify the following two lines by removing the # symbol
 
-$#css = /static/css/style.css
-$#js = /static/js/main.js
+$#var css: /static/css/style.css
+$#var js: /static/js/main.js
 
 <h1>Darling, we're ready to waltz!</h1>
 """
