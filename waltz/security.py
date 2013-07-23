@@ -12,8 +12,8 @@ import random
 from utils import Storage, to36, valid_email, \
     ALPHANUMERICS as ALPHAS
 
-username_regex = r'[A-Za-z0-9_%s]{%s,}'
-passwd_regex = r'[A-Za-z0-9%s]{%s,}'
+username_regex = r'([A-Za-z0-9_%s]){%s,%s}$'
+passwd_regex = r'([A-Za-z0-9%s]){%s,%s}$'
 
 class Account(object):
     """The base Account class provides the basic functions for allowing
