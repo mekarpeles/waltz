@@ -1,3 +1,7 @@
+v.0.1.71 Mon 22 July 2013 -- Chandelier
+- Fixed regex for username and passwd verification
+- Added max length
+
 v.0.1.7 Thu 30 May 2013 -- Chandelier
 - Fixed User.authenticate (broken in 0.1.699)
 - Added test cases for User.authenticate
