@@ -321,7 +321,7 @@ class Cart(object):
         Note: if you only want to remove some of the items in the cart,
         use the cart.set(id, qty) method instead.
         """
-        if type(pid) is not (long or int):
+        if not (isinstance(pid, long) or isinstance(pid, int)):
             raise TypeError("Product ID must be an int or long; " \
                                 "Instead received value: %s of " \
                                 "type %s" % (pid, type(pid)))
