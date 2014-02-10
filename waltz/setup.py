@@ -42,7 +42,7 @@ def dancefloor(urls, fvars, sessions=False, autoreload=False,
     env = {'ctx': web.ctx}
     env.update(kwargs.get('env', {}))
 
-    if type(kwargs.get('ssl', None)) is tuple:        
+    if isinstance((kwargs.get('ssl', None)), tuple):        
         _https.ssl_certificate, _https.ssl_private_key = kwargs.get('ssl')
 
     def setup_rendering():
