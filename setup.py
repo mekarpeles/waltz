@@ -25,7 +25,7 @@ setup(
     platforms='any',
     license='LICENSE',
     install_requires=[
-        'lazydb >= 0.1.64',
+        'lazydb >= 0.1.80',
         'web.py >= 0.36',
         'lepl >= 5.1.3',
         'paste >= 1.7.5.1',
